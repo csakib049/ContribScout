@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+backend/.env
+frontend/.env.local
