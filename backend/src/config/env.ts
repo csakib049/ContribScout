@@ -11,4 +11,3 @@ export const env = {
     .filter(Boolean),
 }
 
-console.log('Token loaded:', env.githubToken ? `yes (${env.githubToken.slice(0, 8)}...)` : 'NO — EMPTY');

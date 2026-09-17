@@ -21,10 +21,9 @@ app.use('/api/repositories',repositoriesRouter);
 
 
 //error handling
-app.use((err:Error , req:Request,res:Response,next:NextFunction)=>{
-    console.log(err);
-    res.status(500).json({error:'Initial server error'})''
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
-
 
 export default app;

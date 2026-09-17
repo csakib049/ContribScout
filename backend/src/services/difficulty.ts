@@ -7,12 +7,12 @@ export function scoreIssue(issue: GitHubIssue): { score: number; level: string }
 
     if (labelNames.includes('documentation')) score += 5;
     if (labelNames.includes('bug')) score += 15;
-    if (labelNames.some((l) => l.includes('enhancement') || l.includes('features'))) score += 25;
+    if (labelNames.some((l) => l.includes('enhancement') || l.includes('feature'))) score += 25;
 
     if (issue.comments > 10) score += 10;
 
 
-    const level: string = score <= 15 ? 'Begineer' : score <= 40 ? 'Intermediate' : 'Advanced';
+    const level: string = score <= 15 ? 'Beginner' : score <= 40 ? 'Intermediate' : 'Advanced';
 
     return { score, level };
 
