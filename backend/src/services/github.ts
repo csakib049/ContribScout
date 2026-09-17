@@ -23,7 +23,14 @@ export interface GitHubRepo {
   stargazers_count: number;
   forks_count: number;
   open_issues_count: number;
-  size: number
+  size: number;
+  default_branch: string;
+}
+
+export interface GitTreeItem{
+  path:string;
+  type: 'blob' | 'tree';
+  size?:number;
 }
 
 
@@ -62,4 +69,24 @@ export async function fetchIssues(owner: string, repo: string) {
   const data:GitHubIssue[] = await res.json();
 
    return data.filter((item)=>!item.pull_request);
+}
+
+
+
+export async function fetchFileTree(owner:string,repo:string):Promise<GitTreeItem[]> {
+  const repoInfo = await fetchRepo(owner,repo);
+  const branch = repoInfo.default_branch || 'main';
+
+  const res = await fetch(
+    `${GITHUB_API}/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
+    { headers: headers() }
+  );
+
+  if(!res.ok) throw new Error(`Github API error fetching file tree for ${owner}/${repo}:${res.status}`);
+
+  
+  const data = await res.json()
+
+  return data.tree;
+  
 }
