@@ -22,7 +22,9 @@ export function scoreIssue(issue: GitHubIssue): { score: number; level: string }
 export function scoreRepo(repo: GitHubRepo): { score: number; level: string } {
     let score = 0;
     if (repo.size > 500000) score += 10;
-    const level = score <= 15 ? 'Beginner' : score <= 40 ? 'Intermediate' : 'Advanced';
+    if(repo.open_issues_count>500)score+=10;
+    if(repo.stargazers_count>20000) score+=10;
+    const level = score <= 10 ? 'Beginner' : score <= 20 ? 'Intermediate' : 'Advanced';
 
     return { score, level };
 }
