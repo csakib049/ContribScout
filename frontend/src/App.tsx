@@ -1,14 +1,14 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ExplorePage from './pages/ExplorePage';
+import RepositoryDetailsPage from './pages/RepositoryDetailsPage';
 
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import ExplorePage from './pages/ExplorePage'
-
-const App = () => {
+function App() {
   return (
     <BrowserRouter>
-       <Routes>
-        <Route path='/' element={<ExplorePage/>}/>
-        
-       </Routes>
+      <Routes>
+        <Route path="/" element={<ExplorePage />} />
+        <Route path="/repo/:id" element={<RepositoryDetailsPage />} />
+      </Routes>
     </BrowserRouter>
   );
 }

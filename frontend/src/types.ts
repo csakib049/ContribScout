@@ -8,7 +8,7 @@ export interface Repository {
     stars: number;
     forks: number;
     open_issues: number;
-    defficulty_score: number;
+    difficulty_score: number;
     difficulty_level: string;
 }
 
