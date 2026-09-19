@@ -9,5 +9,10 @@ export const env = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  githubClientId: process.env.GITHUB_CLIENT_ID || '',
+  githubClientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+  githubCallbackUrl: process.env.GITHUB_CALLBACK_URL || '',
+  jwtSecret: process.env.JWT_SECRET || '',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
 }
 
