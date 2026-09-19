@@ -36,11 +36,22 @@ CREATE TABLE IF NOT EXISTS issues (
 );
 `
 
+const USERS_TABLE = `
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  github_id BIGINT UNIQUE NOT NULL,
+  username TEXT NOT NULL,
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+`
+
 async function migrate() {
   try {
     await pool.query(REPOSITORIES_TABLE)
     await pool.query(ISSUES_TABLE)
-    console.log('Migration applied: repositories + issues tables ready.')
+    await pool.query(USERS_TABLE)
+    console.log('Migration applied: repositories + issues + users tables ready.')
   } catch (err) {
     console.error('Migration failed:', err)
     process.exitCode = 1
