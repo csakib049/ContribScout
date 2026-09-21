@@ -46,11 +46,25 @@ CREATE TABLE IF NOT EXISTS users (
 );
 `
 
+const BOOKMARKS_TABLE = `
+CREATE TABLE IF NOT EXISTS bookmarks (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  repository_id INT REFERENCES repositories(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, repository_id)
+);
+`
+
+
+
+
 async function migrate() {
   try {
     await pool.query(REPOSITORIES_TABLE)
     await pool.query(ISSUES_TABLE)
     await pool.query(USERS_TABLE)
+    await pool.query(BOOKMARKS_TABLE)
     console.log('Migration applied: repositories + issues + users tables ready.')
   } catch (err) {
     console.error('Migration failed:', err)

@@ -4,6 +4,7 @@ import repositoriesRouter from './routes/repositories';
 import authRouter from './routes/auth';
 import { env } from './config/env';
 import cookieParser from 'cookie-parser';
+import bookmarksRouter from './routes/bookmarks';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.use('/api/repositories', repositoriesRouter);
 app.use('/auth', authRouter);
+app.use('/api/bookmarks',bookmarksRouter);
 
 
 //error handling

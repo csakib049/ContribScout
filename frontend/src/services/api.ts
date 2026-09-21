@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`);
+  const res = await fetch(`${API_URL}${path}`, { credentials: 'include' });
   if (!res.ok) throw new Error(`API error: ${res.status} on ${path}`);
 
   return res.json();
