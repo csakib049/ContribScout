@@ -47,3 +47,24 @@ export function fetchCurrentUser() {
 export function logout() {
   return post<{ ok: boolean }>('/auth/logout');
 }
+
+
+
+export function fetchBookmarks() {
+  return get<{ data: import('../types').Repository[] }>('/api/bookmarks');
+}
+
+
+export function addBookmark(repositoryId: number) {
+  return postRaw(`/api/bookmarks/${repositoryId}`, 'POST');
+}
+
+export function removeBookmark(repositoryId: number) {
+  return postRaw(`/api/bookmarks/${repositoryId}`, 'DELETE');
+}
+
+async function postRaw(path: string, method: 'POST' | 'DELETE'): Promise<{ ok: boolean }> {
+  const res = await fetch(`${API_URL}${path}`, { method, credentials: 'include' });
+  if (!res.ok) throw new Error(`API error: ${res.status} on ${path}`);
+  return res.json();
+}
