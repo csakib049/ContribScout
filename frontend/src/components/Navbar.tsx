@@ -12,6 +12,11 @@ export default function Navbar() {
         <nav className="flex justify-between items-center px-6 py-3 border-b">
             <Link to="/" className="font-bold">ContribScout</Link>
 
+
+            {user && (
+                <Link to="/bookmarks" className="text-sm text-gray-700 mr-4">My Bookmarks</Link>
+            )}
+
             {!loading && (
                 user ? (
                     <div className="flex items-center gap-3">
