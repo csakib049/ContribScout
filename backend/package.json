@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "sync": "tsx src/jobs/sync.ts",
+    "scheduler": "tsx src/jobs/scheduler.ts",
     "migrate": "tsx src/db/migrate.ts",
     "typecheck": "tsc --noEmit"
   },

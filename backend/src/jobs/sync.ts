@@ -57,24 +57,25 @@ async function syncRepo(fullName: string) {
 }
 
 
-async function main() {
+export async function runSync() {
     if (env.trackedRepos.length === 0) {
         console.error('TRACKED_REPOS is empty. Set it in .env, e.g. TRACKED_REPOS=facebook/react,vuejs/core');
-        process.exit(1);
+        return;
     }
-
-    for(const repo of env.trackedRepos){
-        try{
+    for (const repo of env.trackedRepos) {
+        try {
             await syncRepo(repo);
-        }catch(err){
-            console.error(`Failed to sync ${repo}:`,err);
+        } catch (err) {
+            console.error(`Failed to sync ${repo}:`, err);
         }
     }
 
+    console.log('Sycn complete.');
 
-    await pool.end();
-    console.log(`Sync complete.`);
-    
 }
 
-main();
+if (require.main === module) {
+    runSync().finally(() => pool.end());
+}
+
+
