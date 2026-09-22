@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Repository } from "../types";
-import { fetchRepositories } from "../services/api";
+import { fetchBookmarks, fetchRepositories } from "../services/api";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import BookmarkButton from "../components/BookmarkButton";
 
 
 const difficultyColor: Record<string, string> = {
@@ -11,7 +13,9 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function ExplorePage() {
+  const { user } = useAuth();
   const [repos, setRepos] = useState<Repository[]>([]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('All');
@@ -25,6 +29,18 @@ export default function ExplorePage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+
+  useEffect(() => {
+    if (!user) {
+      setBookmarkedIds(new Set());
+      return;
+    }
+    fetchBookmarks()
+      .then((res) => setBookmarkedIds(new Set(res.data.map((r) => r.id))))
+      .catch(() => setBookmarkedIds(new Set()));
+  }, [user]);
+
 
 
   const filtered = filter === 'All' ? repos : repos.filter((r) => r.difficulty_level === filter);
@@ -47,7 +63,7 @@ export default function ExplorePage() {
           >
             {level}
           </button>
-        ))}    
+        ))}
       </div>
 
       {filtered.length === 0 && <p className="text-gray-500">No repositories match this filter.</p>}
@@ -61,9 +77,16 @@ export default function ExplorePage() {
           >
             <div className="flex justify-between items-start">
               <h2 className="font-semibold">{repo.owner}/{repo.name}</h2>
-              <span className={`text-xs px-2 py-1 rounded ${difficultyColor[repo.difficulty_level] ?? 'bg-gray-100'}`}>
-                {repo.difficulty_level}
-              </span>
+              <div className="flex items-center gap-2">
+                <BookmarkButton
+                  repositoryId={repo.id}
+                  initiallyBookmarked={bookmarkedIds.has(repo.id)}
+                />
+
+                <span className={`text-xs px-2 py-1 rounded ${difficultyColor[repo.difficulty_level] ?? 'bg-gray-100'}`}>
+                  {repo.difficulty_level}
+                </span>
+              </div>
             </div>
             <p className="text-sm text-gray-600 mt-1 line-clamp-2">{repo.description}</p>
             <div className="text-xs text-gray-500 mt-2 flex gap-3">
