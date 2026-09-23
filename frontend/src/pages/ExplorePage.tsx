@@ -49,7 +49,24 @@ export default function ExplorePage() {
 
   const filtered = filter === 'All' ? repos : repos.filter((r) => r.difficulty_level === filter);
 
-  if (loading) return <div className="p-8 text-center">Loading repositories...</div>;
+  
+  if (loading) {
+  return (
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Explore Repositories</h1>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="border rounded-lg p-4 animate-pulse">
+            <div className="h-5 bg-gray-200 rounded w-1/2 mb-2" />
+            <div className="h-4 bg-gray-200 rounded w-full mb-1" />
+            <div className="h-4 bg-gray-200 rounded w-2/3" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
   if (error) return <div className="p-8 text-center text-red-600">Error: {error}</div>
 
   return (

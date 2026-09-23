@@ -23,7 +23,7 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
 
 export function fetchRepositories(page = 1) {
   return get<{ page: number; limit: number; data: import('../types').Repository[] }>(
-    `/api/repositories?page=${page}`
+    `/api/repositories?page=${page}&limit=8`
   );
 }
 
