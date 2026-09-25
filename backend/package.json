@@ -8,7 +8,8 @@
     "sync": "tsx src/jobs/sync.ts",
     "scheduler": "tsx src/jobs/scheduler.ts",
     "migrate": "tsx src/db/migrate.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +31,7 @@
     "@types/node": "^26.5.1",
     "@types/pg": "^8.23.1",
     "tsx": "^4.23.13",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
   }
 }
