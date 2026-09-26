@@ -30,6 +30,8 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.5.1",
     "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vitest": "^5.0.2"
