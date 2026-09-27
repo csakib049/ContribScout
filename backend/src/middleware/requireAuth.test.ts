@@ -63,6 +63,7 @@ describe('requireAuth', () => {
 
         expect(next).toHaveBeenCalledOnce();
         expect(req.userId).toBe(42);
+        
 
         vi.restoreAllMocks();
     });

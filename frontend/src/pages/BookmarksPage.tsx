@@ -18,21 +18,21 @@ export default function BookmarksPage() {
     }, [user]);
 
     if (authLoading) return <div className="p-8 text-center">Loading...</div>;
-    if (!user) return <div className="p-8 text-center text-gray-500">Sign in to see your bookmarks.</div>;
+    if (!user) return <div className="p-8 text-center text-gray-400">Sign in to see your bookmarks.</div>;
     if (loading) return <div className="p-8 text-center">Loading bookmarks...</div>;
 
     return (
         <div className="max-w-5xl mx-auto p-6">
             <h1 className="text-2xl font-bold mb-4">My Bookmarks</h1>
-            {repos.length === 0 && <p className="text-gray-500">No bookmarks yet — star a repo from Explore.</p>}
+            {repos.length === 0 && <p className="text-gray-400">No bookmarks yet — star a repo from Explore.</p>}
             <div className="grid gap-4 sm:grid-cols-2">
                 {repos.map((repo) => (
-                    <Link key={repo.id} to={`/repo/${repo.id}`} className="border rounded-lg p-4 hover:shadow-md block">
+                    <Link key={repo.id} to={`/repo/${repo.id}`} className="border border-gray-800 bg-gray-900 rounded-lg p-4 hover:bg-gray-800 hover:border-gray-700 hover:shadow-lg transition block">
                         <div className="flex justify-between items-start">
                             <h2 className="font-semibold">{repo.owner}/{repo.name}</h2>
                             <BookmarkButton repositoryId={repo.id} initiallyBookmarked={true} />
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
+                        <p className="text-sm text-gray-400 mt-1">{repo.description}</p>
                     </Link>
                 ))}
             </div>
