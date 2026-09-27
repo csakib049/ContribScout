@@ -24,8 +24,8 @@ export default class ErrorBoundary extends Component<Props, State> {
         if (this.state.hasError) {
             return (
                 <div className="p-8 text-center">
-                    <h2 className="text-lg font-semibold text-gray-100">Something went wrong.</h2>
-                    <p className="text-gray-400 text-sm mt-1">Try refreshing the page.</p>
+                    <h2 className="text-lg font-semibold text-neutral-100">Something went wrong.</h2>
+                    <p className="text-neutral-400 text-sm mt-1">Try refreshing the page.</p>
                 </div>
             );
         }

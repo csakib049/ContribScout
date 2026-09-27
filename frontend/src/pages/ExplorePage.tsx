@@ -56,10 +56,10 @@ export default function ExplorePage() {
       <h1 className="text-2xl font-bold mb-4">Explore Repositories</h1>
       <div className="grid gap-4 sm:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="border border-gray-800 bg-gray-900 rounded-lg p-4 animate-pulse">
-            <div className="h-5 bg-gray-800 rounded w-1/2 mb-2" />
-            <div className="h-4 bg-gray-800 rounded w-full mb-1" />
-            <div className="h-4 bg-gray-800 rounded w-2/3" />
+          <div key={i} className="border border-neutral-800 bg-neutral-900 rounded-lg p-4 animate-pulse">
+            <div className="h-5 bg-neutral-800 rounded w-1/2 mb-2" />
+            <div className="h-4 bg-neutral-800 rounded w-full mb-1" />
+            <div className="h-4 bg-neutral-800 rounded w-2/3" />
           </div>
         ))}
       </div>
@@ -78,7 +78,7 @@ export default function ExplorePage() {
           <button
             key={level}
             onClick={() => setFilter(level)}
-            className={`px-3 py-1 rounded border text-sm transition-colors ${filter === level ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-500 active:bg-blue-700' : 'bg-gray-900 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white active:bg-gray-700'
+            className={`px-3 py-1 rounded border text-sm transition-colors ${filter === level ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-500 active:bg-blue-700' : 'bg-neutral-900 border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white active:bg-neutral-700'
               }`}
           >
             {level}
@@ -86,22 +86,22 @@ export default function ExplorePage() {
         ))}
       </div>
 
-      {filtered.length === 0 && <p className="text-gray-400">No repositories match this filter.</p>}
+      {filtered.length === 0 && <p className="text-neutral-400">No repositories match this filter.</p>}
 
       <div className="grid gap-4 sm:grid-cols-2">
         {filtered.map((repo) => (
-          <Link key={repo.id} to={`/repo/${repo.id}`} className="border border-gray-800 bg-gray-900 rounded-lg p-4 hover:bg-gray-800 hover:border-gray-700 hover:shadow-lg transition block">
+          <Link key={repo.id} to={`/repo/${repo.id}`} className="border border-neutral-800 bg-neutral-900 rounded-lg p-4 hover:bg-neutral-800 hover:border-neutral-700 hover:shadow-lg transition block">
             <div className="flex justify-between items-start">
               <h2 className="font-semibold">{repo.owner}/{repo.name}</h2>
-              <div className="flex items-center gap-2">
-                <BookmarkButton repositoryId={repo.id} initiallyBookmarked={bookmarkedIds.has(repo.id)} />
-                <span className={`text-xs px-2 py-1 rounded ${difficultyColor[repo.difficulty_level] ?? 'bg-gray-800 text-gray-200'}`}>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className={`text-xs px-2 py-1 rounded ${difficultyColor[repo.difficulty_level] ?? 'bg-neutral-800 text-neutral-200'}`}>
                   {repo.difficulty_level}
                 </span>
+                <BookmarkButton repositoryId={repo.id} initiallyBookmarked={bookmarkedIds.has(repo.id)} />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mt-1 line-clamp-2">{repo.description}</p>
-            <div className="text-xs text-gray-400 mt-2 flex gap-3">
+            <p className="text-sm text-neutral-400 mt-1 line-clamp-2">{repo.description}</p>
+            <div className="text-xs text-neutral-400 mt-2 flex gap-3">
               <span>⭐ {repo.stars}</span>
               <span>🍴 {repo.forks}</span>
               <span>{repo.language}</span>
@@ -114,15 +114,15 @@ export default function ExplorePage() {
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
-          className="px-3 py-1 border border-gray-700 rounded text-sm text-gray-200 hover:bg-gray-800 hover:border-gray-600 hover:text-white active:bg-gray-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+          className="px-3 py-1 border border-neutral-700 rounded text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white active:bg-neutral-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
         >
           ← Prev
         </button>
-        <span className="text-sm text-gray-400">Page {page}</span>
+        <span className="text-sm text-neutral-400">Page {page}</span>
         <button
           onClick={() => setPage((p) => p + 1)}
           disabled={!hasMore}
-          className="px-3 py-1 border border-gray-700 rounded text-sm text-gray-200 hover:bg-gray-800 hover:border-gray-600 hover:text-white active:bg-gray-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+          className="px-3 py-1 border border-neutral-700 rounded text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white active:bg-neutral-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
         >
           Next →
         </button>

@@ -39,23 +39,23 @@ export default function RepositoryDetailsPage() {
       <div className="flex justify-between items-start mt-4">
         <div>
           <h1 className="text-2xl font-bold">{repo.owner}/{repo.name}</h1>
-          <p className="text-gray-400 mt-1">{repo.description}</p>
+          <p className="text-neutral-400 mt-1">{repo.description}</p>
         </div>
         <a
           href={repo.url}
           target="_blank"
           rel="noreferrer"
-          className="bg-white text-gray-950 text-sm font-medium px-4 py-2 rounded hover:bg-gray-200 active:bg-gray-300 transition-colors"
+          className="bg-white text-neutral-950 text-sm font-medium px-4 py-2 rounded hover:bg-neutral-200 active:bg-neutral-300 transition-colors"
         >
           View on GitHub
         </a>
       </div>
 
-      <div className="flex gap-4 text-sm text-gray-400 mt-3">
+      <div className="flex gap-4 text-sm text-neutral-400 mt-3">
         <span>⭐ {repo.stars}</span>
         <span>🍴 {repo.forks}</span>
         <span>{repo.language}</span>
-        <span className="px-2 py-0.5 bg-gray-800 text-gray-200 rounded">{repo.difficulty_level}</span>
+        <span className="px-2 py-0.5 bg-neutral-800 text-neutral-200 rounded">{repo.difficulty_level}</span>
       </div>
 
       <section className="mt-8">
@@ -67,30 +67,30 @@ export default function RepositoryDetailsPage() {
               href={issue.url}
               target="_blank"
               rel="noreferrer"
-              className="block border border-gray-800 bg-gray-900 rounded p-3 hover:bg-gray-800 hover:border-gray-700 transition-colors"
+              className="block border border-neutral-800 bg-neutral-900 rounded p-3 hover:bg-neutral-800 hover:border-neutral-700 transition-colors"
             >
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-gray-100">#{issue.number} {issue.title}</span>
-                <span className="text-xs px-2 py-0.5 bg-gray-800 text-gray-200 rounded">{issue.difficulty_level}</span>
+                <span className="text-sm font-medium text-neutral-100">#{issue.number} {issue.title}</span>
+                <span className="text-xs px-2 py-0.5 bg-neutral-800 text-neutral-200 rounded">{issue.difficulty_level}</span>
               </div>
-              <div className="text-xs text-gray-400 mt-1">{issue.labels.join(', ')}</div>
+              <div className="text-xs text-neutral-400 mt-1">{issue.labels.join(', ')}</div>
             </a>
           ))}
-          {issues.length === 0 && <p className="text-gray-400 text-sm">No open issues synced yet.</p>}
+          {issues.length === 0 && <p className="text-neutral-400 text-sm">No open issues synced yet.</p>}
         </div>
       </section>
 
       <section className="mt-8">
         <h2 className="font-semibold mb-2">Files ({files.length})</h2>
-        <div className="border border-gray-800 bg-gray-900 rounded max-h-64 overflow-y-auto text-sm font-mono text-gray-300">
+        <div className="border border-neutral-800 bg-neutral-900 rounded max-h-64 overflow-y-auto text-sm font-mono text-neutral-300">
           {files.slice(0, 100).map((file) => (
-            <div key={file.path} className="px-3 py-1 border-b border-gray-800 last:border-0">
+            <div key={file.path} className="px-3 py-1 border-b border-neutral-800 last:border-0">
               {file.type === 'tree' ? '📁' : '📄'} {file.path}
             </div>
           ))}
         </div>
         {files.length > 100 && (
-          <p className="text-xs text-gray-400 mt-1">Showing first 100 of {files.length} files.</p>
+          <p className="text-xs text-neutral-400 mt-1">Showing first 100 of {files.length} files.</p>
         )}
       </section>
     </div>

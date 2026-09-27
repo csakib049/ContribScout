@@ -38,7 +38,7 @@ export default function BookmarkButton({ repositoryId, initiallyBookmarked }: Pr
     <button
       onClick={toggle}
       disabled={busy}
-      className={`leading-none transition-colors disabled:opacity-50 ${bookmarked ? 'text-yellow-400' : 'text-gray-500 hover:text-yellow-400'
+      className={`leading-none transition-colors disabled:opacity-50 ${bookmarked ? 'text-yellow-400' : 'text-neutral-500 hover:text-yellow-400'
         }`}
       title={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
       aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
