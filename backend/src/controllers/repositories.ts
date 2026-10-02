@@ -14,7 +14,7 @@ export async function listRepositories(req: Request, res: Response) {
     res.json({ page, limit, data: result.rows });
 }
 
-
+//get Repo from DB 
 export async function getRepository(req: Request, res: Response) {
     const id = Number(req.params.id);
 
@@ -34,6 +34,8 @@ export async function getRepository(req: Request, res: Response) {
     res.json(result.rows[0]);
 }
 
+
+//get Repo Issues from DB
 export async function getRepositoryIssues(req: Request, res: Response) {
     const id = Number(req.params.id);
 
@@ -41,12 +43,14 @@ export async function getRepositoryIssues(req: Request, res: Response) {
         return res.status(400).json({ error: 'Invalid ID format' });
     }
 
-    const result = await pool.query(`SELECT * FROM issues WHERE repository_id = $1`, [id]);
+    const result = await pool.query(`SELECT * FROM issues WHERE repository_id = $1 AND state = 'open'`, [id]);
+
     res.json({ data: result.rows });
 }
 
 
-
+// get only owner and name from DB 
+// The file tree is fetched Live from github 
 export async function getRepositoryFiles(req: Request, res: Response) {
     const id = Number(req.params.id);
     if (isNaN(id) || id <= 0) {

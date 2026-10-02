@@ -59,7 +59,7 @@ export async function fetchRepo(owner: string, repo: string): Promise<GitHubRepo
 
 export async function fetchIssues(owner: string, repo: string) {
   const res = await fetch(
-    `${GITHUB_API}/repos/${owner}/${repo}/issues?state=open&per_page=50`,
+    `${GITHUB_API}/repos/${owner}/${repo}/issues?state=all&per_page=50`,
     { headers: headers() }
   );
 
@@ -72,7 +72,7 @@ export async function fetchIssues(owner: string, repo: string) {
 }
 
 
-
+// called live, every time someone opens a repository's details page
 export async function fetchFileTree(owner:string,repo:string):Promise<GitTreeItem[]> {
   const repoInfo = await fetchRepo(owner,repo);
   const branch = repoInfo.default_branch || 'main';
