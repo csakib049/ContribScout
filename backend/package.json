@@ -8,6 +8,7 @@
     "sync": "tsx src/jobs/sync.ts",
     "scheduler": "tsx src/jobs/scheduler.ts",
     "migrate": "tsx src/db/migrate.ts",
+    "discover": "tsx src/jobs/discover.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

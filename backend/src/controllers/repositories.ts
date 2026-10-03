@@ -9,7 +9,7 @@ export async function listRepositories(req: Request, res: Response) {
     const offset = (page - 1) * limit; //how many items to skip 
 
     const result = await pool.query(
-        `SELECT * FROM repositories ORDER BY stars DESC LIMIT $1 OFFSET $2`, [limit, offset]
+            `SELECT * FROM repositories WHERE is_active = TRUE ORDER BY stars DESC LIMIT $1 OFFSET $2`, [limit, offset]
     );
     res.json({ page, limit, data: result.rows });
 }

@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS repositories (
   size INT DEFAULT 0,
   difficulty_score INT,
   difficulty_level TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  source TEXT DEFAULT 'manual',
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 `
@@ -57,11 +59,20 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 `
 
 
+// Handles the case where the table already exists from before this change —
+// CREATE TABLE IF NOT EXISTS won't add columns to an existing table, so we add them separately.
+const REPOSITORIES_ALTER = `
+ALTER TABLE repositories ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE repositories ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'manual';
+`
+
+
 
 
 async function migrate() {
   try {
     await pool.query(REPOSITORIES_TABLE)
+    await pool.query(REPOSITORIES_ALTER)
     await pool.query(ISSUES_TABLE)
     await pool.query(USERS_TABLE)
     await pool.query(BOOKMARKS_TABLE)
