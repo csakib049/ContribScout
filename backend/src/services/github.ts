@@ -25,6 +25,7 @@ export interface GitHubRepo {
   open_issues_count: number;
   size: number;
   default_branch: string;
+  archived:boolean;
 }
 
 export interface GitTreeItem {
