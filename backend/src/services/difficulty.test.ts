@@ -13,6 +13,8 @@ function makeIssue(overrides: Partial<GitHubIssue>): GitHubIssue {
         state: 'open',
         labels: [],
         comments: 0,
+        created_at: new Date().toISOString(),
+        body: null,
         ...overrides, //<-- dump everything from 'overrides' here 
     };
 };
@@ -33,6 +35,7 @@ function makeRepo(overrides: Partial<GitHubRepo>): GitHubRepo {
         open_issues_count: 0,
         size: 0,
         default_branch: 'main',
+        archived: false,
         ...overrides, //<-- dump everything from 'overrides' here 
     };
 }
@@ -44,7 +47,7 @@ describe('scoreIssue', () => {
 
     it('scores an issue with no labels as begineer', () => {
         const result = scoreIssue(makeIssue({ labels: [] }));
-        expect(result.score).toBe(0);
+        expect(result.score).toBe(5);
         expect(result.level).toBe('Beginner');
     });
 
@@ -67,7 +70,7 @@ describe('scoreIssue', () => {
 
     it('adds 10 points when comments exceed 10', () => {
         const result = scoreIssue(makeIssue({ labels: [], comments: 15 }));
-        expect(result.score).toBe(10);
+        expect(result.score).toBe(15);
     });
 
     it('combines bug + enhancement to reach Advanced', () => {
@@ -79,6 +82,13 @@ describe('scoreIssue', () => {
     it('label matching is case-insensitive', () => {
         const result = scoreIssue(makeIssue({ labels: ['BUG'] }));
         expect(result.score).toBe(15);
+    });
+
+    it('adds points for an issue open more than a year', () => {
+        const oldDate = new Date();
+        oldDate.setFullYear(oldDate.getFullYear() - 2);
+        const result = scoreIssue(makeIssue({ labels: [], created_at: oldDate.toISOString() }));
+        expect(result.score).toBe(20);
     });
 
 

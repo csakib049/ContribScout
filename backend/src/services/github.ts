@@ -43,6 +43,8 @@ export interface GitHubIssue {
   state: string;
   labels: Array<{ name: string } | string>;
   comments: number;
+  created_at:string;
+  body: string | null;
   pull_request?: unknown;
 }
 
