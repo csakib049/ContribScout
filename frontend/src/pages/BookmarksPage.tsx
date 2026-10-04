@@ -33,6 +33,9 @@ export default function BookmarksPage() {
                             <BookmarkButton repositoryId={repo.id} initiallyBookmarked={true} />
                         </div>
                         <p className="text-sm text-neutral-400 mt-1">{repo.description}</p>
+                        {!repo.is_active && (
+                            <span className="text-xs text-gray-500 italic">No longer actively tracked</span>
+                        )}
                     </Link>
                 ))}
             </div>

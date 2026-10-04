@@ -10,6 +10,7 @@ export interface Repository {
     open_issues: number;
     difficulty_score: number;
     difficulty_level: string;
+    is_active: boolean;
 }
 
 

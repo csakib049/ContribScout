@@ -20,6 +20,7 @@ ContribScout helps developers find open-source GitHub projects and issues that m
 - Sign in with your GitHub account
 - Save repositories as bookmarks and view them later
 - Data updates automatically in the background, so it stays fresh
+- Automatically discovers new repositories from GitHub based on quality checks (open issues, beginner-friendly labels, activity)
 
 ## How to run it on your own computer
 
@@ -55,6 +56,12 @@ Set up the database tables and pull in some starting data:
 ```
 npm run migrate
 npm run sync
+```
+
+To automatically find and add new repositories (optional — this searches GitHub and can take a few minutes):
+```
+
+npm run discover
 ```
 
 Start the backend:
