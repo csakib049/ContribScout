@@ -68,3 +68,8 @@ async function postRaw(path: string, method: 'POST' | 'DELETE'): Promise<{ ok: b
   if (!res.ok) throw new Error(`API error: ${res.status} on ${path}`);
   return res.json();
 }
+
+
+export function searchRepositories(q: string) {
+  return get<{ data: import('../types').Repository[] }>(`/api/repositories/search?q=${encodeURIComponent(q)}`);
+}

@@ -59,6 +59,24 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 `
 
 
+const SEARCH_COLUMNS = `
+ALTER TABLE repositories ADD COLUMN IF NOT EXISTS search_vector tsvector
+  GENERATED ALWAYS AS (
+    to_tsvector('english', coalesce(name,'') || ' ' || coalesce(description,'') || ' ' || coalesce(language,''))
+  ) STORED;
+
+ALTER TABLE issues ADD COLUMN IF NOT EXISTS search_vector tsvector
+  GENERATED ALWAYS AS (
+    to_tsvector('english', coalesce(title,''))
+  ) STORED;
+
+CREATE INDEX IF NOT EXISTS idx_repositories_search ON repositories USING GIN (search_vector);
+CREATE INDEX IF NOT EXISTS idx_issues_search ON issues USING GIN (search_vector);
+`
+
+
+
+
 // Handles the case where the table already exists from before this change —
 // CREATE TABLE IF NOT EXISTS won't add columns to an existing table, so we add them separately.
 const REPOSITORIES_ALTER = `
@@ -76,6 +94,7 @@ async function migrate() {
     await pool.query(ISSUES_TABLE)
     await pool.query(USERS_TABLE)
     await pool.query(BOOKMARKS_TABLE)
+    await pool.query(SEARCH_COLUMNS)
     console.log('Migration applied: repositories + issues + users tables ready.')
   } catch (err) {
     console.error('Migration failed:', err)

@@ -81,5 +81,18 @@ export async function getRepositoryFiles(req: Request, res: Response) {
 }
 
 
+// function for searchRepo 
+export async function searchRepositories(req: Request, res: Response) {
+  const q = (req.query.q as string)?.trim();
+  if (!q) return res.status(400).json({ error: 'Missing search query (?q=...)' });
+
+  const result = await pool.query(
+    `SELECT * FROM repositories WHERE is_active = TRUE AND search_vector @@ plainto_tsquery('english', $1) ORDER BY stars DESC LIMIT 20`,
+    [q]
+  );
+  res.json({ data: result.rows });
+}
+
+
 
 

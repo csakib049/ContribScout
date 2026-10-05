@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { listRepositories, getRepository, getRepositoryIssues, getRepositoryFiles } from "../controllers/repositories";
+import { listRepositories, getRepository, getRepositoryIssues, getRepositoryFiles, searchRepositories } from "../controllers/repositories";
 
 
 const router = Router();
 
+router.get('/search',searchRepositories)
 router.get('/', listRepositories);
 router.get('/:id', getRepository);
 router.get('/:id/issues', getRepositoryIssues);
