@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import type { Repository } from "../types";
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import BookmarkButton from "../components/BookmarkButton";
+import RepoCard from "../components/RepoCard";
 import { fetchRepositories, fetchBookmarks, searchRepositories } from '../services/api';
+import { AlertIcon, ChevronLeftIcon, ChevronRightIcon, InboxIcon, SearchIcon, SpinnerIcon, XIcon } from "../components/icons";
 
-const difficultyColor: Record<string, string> = {
-  Beginner: 'bg-green-900 text-green-300',
-  Intermediate: 'bg-yellow-900 text-yellow-300',
-  Advanced: 'bg-red-900 text-red-300',
+const FILTERS = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const;
+
+const filterActiveStyles: Record<string, string> = {
+  All: 'bg-cyan-500/15 text-cyan-200',
+  Beginner: 'bg-emerald-500/15 text-emerald-200',
+  Intermediate: 'bg-amber-500/15 text-amber-200',
+  Advanced: 'bg-red-500/15 text-red-200',
+};
+
+const filterDots: Record<string, string> = {
+  Beginner: 'bg-emerald-400',
+  Intermediate: 'bg-amber-400',
+  Advanced: 'bg-red-400',
 };
 
 export default function ExplorePage() {
@@ -23,16 +32,21 @@ export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Repository[] | null>(null);
   const [searching, setSearching] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults(null);
+      setSearching(false);
       return;
     }
     setSearching(true);
     const timer = setTimeout(() => {
       searchRepositories(searchQuery)
-        .then((res) => setSearchResults(res.data))
+        .then((res) => {
+          setSearchResults(res.data);
+          setError(null);
+        })
         .catch((err) => setError(err.message))
         .finally(() => setSearching(false));
     }, 300);
@@ -45,10 +59,11 @@ export default function ExplorePage() {
       .then((res) => {
         setRepos(res.data);
         setHasMore(res.data.length === res.limit); // full page = probably more
+        setError(null);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, reloadKey]);
 
   useEffect(() => {
     if (!user) {
@@ -63,95 +78,205 @@ export default function ExplorePage() {
   const baseList = searchResults ?? repos;
   const filtered = filter === 'All' ? baseList : baseList.filter((r) => r.difficulty_level === filter);
 
-  if (loading) {
-    return (
-      <div className="max-w-5xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">Explore Repositories</h1>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="border border-neutral-800 bg-neutral-900 rounded-lg p-4 animate-pulse">
-              <div className="h-5 bg-neutral-800 rounded w-1/2 mb-2" />
-              <div className="h-4 bg-neutral-800 rounded w-full mb-1" />
-              <div className="h-4 bg-neutral-800 rounded w-2/3" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  function clearFilters() {
+    setFilter('All');
+    setSearchQuery('');
   }
 
-  if (error) return <div className="p-8 text-center text-red-400">Error: {error}</div>
+  function handleRetry() {
+    setError(null);
+    setSearchQuery('');
+    setReloadKey((key) => key + 1);
+  }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Explore Repositories</h1>
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          Explore Repositories
+        </h1>
+        <p className="mt-2 text-sm text-neutral-400 sm:text-base">
+          Discover open-source projects and find your next contribution.
+        </p>
+        <div className="mt-6 h-px bg-gradient-to-r from-cyan-500/40 via-blue-500/15 to-transparent" />
+      </header>
 
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search repositories..."
-        className="w-full mb-4 px-3 py-2 rounded border border-zinc-700 bg-zinc-900 text-zinc-100 text-sm"
-      />
+      <div className="mt-7 flex flex-col gap-4">
+        <div className="relative">
+          <label htmlFor="repo-search" className="sr-only">
+            Search repositories
+          </label>
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+          <input
+            id="repo-search"
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search repositories by name, owner, or topic..."
+            className="h-11 w-full rounded-xl border border-neutral-800 bg-neutral-900 pl-11 pr-10 text-sm text-neutral-100 transition-colors placeholder:text-neutral-500 hover:border-neutral-700 focus:border-cyan-500/60"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {searchQuery.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-neutral-500 transition-colors hover:bg-neutral-800 hover:text-neutral-200"
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
-      {searching && <p className="text-xs text-neutral-500 mb-4">Searching...</p>}
-      {!searching && <div className="mb-4" />}
-
-      <div className="flex gap-2 mb-6">
-        {['All', 'Beginner', 'Intermediate', 'Advanced'].map((level) => (
-          <button
-            key={level}
-            onClick={() => setFilter(level)}
-            className={`px-3 py-1 rounded border text-sm transition-colors ${filter === level ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-500 active:bg-blue-700' : 'bg-neutral-900 border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white active:bg-neutral-700'
-              }`}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div
+            role="group"
+            aria-label="Filter by difficulty"
+            className="inline-flex w-full flex-wrap gap-1 rounded-xl border border-neutral-800 bg-neutral-900 p-1 sm:w-auto"
           >
-            {level}
-          </button>
-        ))}
+            {FILTERS.map((level) => {
+              const active = filter === level;
+              return (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setFilter(level)}
+                  aria-pressed={active}
+                  className={`flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors sm:flex-none ${
+                    active
+                      ? filterActiveStyles[level]
+                      : 'text-neutral-400 hover:bg-neutral-800/60 hover:text-neutral-200'
+                  }`}
+                >
+                  {level !== 'All' && (
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${filterDots[level] ?? 'bg-neutral-400'}`}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {level}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="flex h-5 items-center gap-2 text-xs text-neutral-500"
+            aria-live="polite"
+          >
+            {searching && (
+              <>
+                <SpinnerIcon className="h-3.5 w-3.5 animate-spin" />
+                <span>Searching...</span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      {filtered.length === 0 && <p className="text-neutral-400">No repositories match this filter.</p>}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        {filtered.map((repo) => (
-          <Link key={repo.id} to={`/repo/${repo.id}`} className="border border-neutral-800 bg-neutral-900 rounded-lg p-4 hover:bg-neutral-800 hover:border-neutral-700 hover:shadow-lg transition block">
-            <div className="flex justify-between items-start">
-              <h2 className="font-semibold">{repo.owner}/{repo.name}</h2>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-xs px-2 py-1 rounded ${difficultyColor[repo.difficulty_level] ?? 'bg-neutral-800 text-neutral-200'}`}>
-                  {repo.difficulty_level}
-                </span>
-                <BookmarkButton repositoryId={repo.id} initiallyBookmarked={bookmarkedIds.has(repo.id)} />
-              </div>
+      <div className="mt-6">
+        {error ? (
+          <div className="flex flex-col items-center rounded-xl border border-neutral-800 bg-neutral-900/60 px-6 py-16 text-center">
+            <div className="grid h-12 w-12 place-items-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400">
+              <AlertIcon className="h-6 w-6" />
             </div>
-            <p className="text-sm text-neutral-400 mt-1 line-clamp-2">{repo.description}</p>
-            <div className="text-xs text-neutral-400 mt-2 flex gap-3">
-              <span>⭐ {repo.stars}</span>
-              <span>🍴 {repo.forks}</span>
-              <span>{repo.language}</span>
+            <h2 className="mt-4 text-base font-semibold text-white">Something went wrong</h2>
+            <p className="mt-1.5 max-w-sm text-sm text-neutral-400">
+              We couldn't load repositories right now. Check your connection and try again.
+            </p>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-neutral-200 active:bg-neutral-300"
+            >
+              Retry
+            </button>
+          </div>
+        ) : loading ? (
+          <div>
+            <span className="sr-only" role="status">Loading repositories...</span>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-neutral-800/80 bg-neutral-900/60 p-5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="skeleton h-4 w-1/2 rounded-md" />
+                    <div className="skeleton h-5 w-24 rounded-full" />
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="skeleton h-3.5 w-full rounded-md" />
+                    <div className="skeleton h-3.5 w-3/4 rounded-md" />
+                  </div>
+                  <div className="mt-5 flex items-center justify-between border-t border-neutral-800/70 pt-3.5">
+                    <div className="flex gap-3">
+                      <div className="skeleton h-3 w-12 rounded-md" />
+                      <div className="skeleton h-3 w-10 rounded-md" />
+                      <div className="skeleton h-3 w-16 rounded-md" />
+                    </div>
+                    <div className="skeleton h-3 w-3 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
-          </Link>
-        ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center rounded-xl border border-dashed border-neutral-800 bg-neutral-900/40 px-6 py-16 text-center">
+            <div className="grid h-12 w-12 place-items-center rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-500">
+              <InboxIcon className="h-6 w-6" />
+            </div>
+            <h2 className="mt-4 text-base font-semibold text-white">No repositories found</h2>
+            <p className="mt-1.5 max-w-sm text-sm text-neutral-400">
+              Nothing matches your current search and difficulty filter. Try broadening your
+              criteria — new repositories are synced regularly.
+            </p>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="mt-5 rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 transition-colors hover:border-cyan-500/40 hover:text-white"
+            >
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((repo) => (
+              <RepoCard key={repo.id} repo={repo} bookmarked={bookmarkedIds.has(repo.id)} />
+            ))}
+          </div>
+        )}
       </div>
 
-      {!searchResults && (
-        <div className="flex justify-center items-center gap-4 mt-8">
+      {!searchResults && !loading && !error && (
+        <nav aria-label="Pagination" className="mt-10 flex items-center justify-center gap-2">
           <button
+            type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1 border border-neutral-700 rounded text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white active:bg-neutral-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+            aria-label="Previous page"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-neutral-300 transition-colors hover:border-neutral-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-neutral-800 disabled:hover:text-neutral-300"
           >
-            ← Prev
+            <ChevronLeftIcon className="h-4 w-4" />
+            Prev
           </button>
-          <span className="text-sm text-neutral-400">Page {page}</span>
+
+          <span className="rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-2 text-sm text-neutral-400">
+            Page <span className="font-medium text-white">{page}</span>
+          </span>
+
           <button
+            type="button"
             onClick={() => setPage((p) => p + 1)}
             disabled={!hasMore}
-            className="px-3 py-1 border border-neutral-700 rounded text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 hover:text-white active:bg-neutral-700 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+            aria-label="Next page"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-neutral-300 transition-colors hover:border-neutral-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-neutral-800 disabled:hover:text-neutral-300"
           >
-            Next →
+            Next
+            <ChevronRightIcon className="h-4 w-4" />
           </button>
-        </div>
+        </nav>
       )}
     </div>
   );

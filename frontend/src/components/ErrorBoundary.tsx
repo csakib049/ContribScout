@@ -16,7 +16,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         return { hasError: true };
     }
 
-    componentDidCatch(error: Error, info: React.ErrorInfo) {
+    componentDidCatch(error: Error, info: ErrorInfo) {
         console.error('Uncaught error:', error, info);
     }
 
