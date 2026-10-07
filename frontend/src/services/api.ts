@@ -21,9 +21,12 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 
-export function fetchRepositories(page = 1) {
+export function fetchRepositories(page = 1, difficulty?: string) {
+  const params = new URLSearchParams({ page: String(page), limit: '12' });
+  if (difficulty && difficulty !== 'All') params.set('difficulty', difficulty);
+
   return get<{ page: number; limit: number; data: import('../types').Repository[] }>(
-    `/api/repositories?page=${page}&limit=8`
+    `/api/repositories?${params.toString()}`
   );
 }
 

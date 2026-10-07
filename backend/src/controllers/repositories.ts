@@ -5,12 +5,21 @@ import { fetchFileTree } from '../services/github';
 
 export async function listRepositories(req: Request, res: Response) {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 20;
+    const limit = Number(req.query.limit) || 12;
     const offset = (page - 1) * limit; //how many items to skip 
 
-    const result = await pool.query(
-            `SELECT * FROM repositories WHERE is_active = TRUE ORDER BY stars DESC LIMIT $1 OFFSET $2`, [limit, offset]
-    );
+    const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty.trim() : '';
+
+    const result = difficulty
+        ? await pool.query(
+            `SELECT * FROM repositories WHERE is_active = TRUE AND difficulty_level = $1 ORDER BY stars DESC LIMIT $2 OFFSET $3`,
+            [difficulty, limit, offset]
+        )
+        : await pool.query(
+            `SELECT * FROM repositories WHERE is_active = TRUE ORDER BY stars DESC LIMIT $1 OFFSET $2`,
+            [limit, offset]
+        );
+
     res.json({ page, limit, data: result.rows });
 }
 

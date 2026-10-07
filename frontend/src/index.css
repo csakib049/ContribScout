@@ -6,6 +6,12 @@ html {
 
 body {
   background-color: var(--color-neutral-950);
+  background-image: radial-gradient(
+    80rem 30rem at 50% -10rem,
+    rgba(34, 211, 238, 0.07),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
   color: var(--color-neutral-100);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;

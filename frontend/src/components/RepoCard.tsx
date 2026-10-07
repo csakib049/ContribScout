@@ -52,11 +52,18 @@ export default function RepoCard({ repo, bookmarked }: Props) {
   return (
     <Link
       to={`/repo/${repo.id}`}
-      className="group flex flex-col rounded-xl border border-neutral-800/80 bg-neutral-900/60 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-500/30 hover:bg-neutral-900 hover:shadow-lg hover:shadow-black/40"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/60 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-500/40 hover:bg-neutral-900 hover:shadow-xl hover:shadow-black/50"
     >
+      <span
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        aria-hidden="true"
+      />
+
       <div className="flex items-start justify-between gap-3">
-        <h2 className="min-w-0 truncate text-[15px] font-semibold tracking-tight text-white">
-          <span className="font-normal text-neutral-400">{repo.owner}/</span>
+        <h2 className="min-h-11 min-w-0 break-words text-[15px] font-semibold leading-snug tracking-tight text-white">
+          <span className="font-normal text-neutral-400 transition-colors group-hover:text-neutral-300">
+            {repo.owner}/
+          </span>
           {repo.name}
         </h2>
 
@@ -76,7 +83,7 @@ export default function RepoCard({ repo, bookmarked }: Props) {
         </div>
       </div>
 
-      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-neutral-400">
+      <p className="mt-2 line-clamp-2 min-h-12 text-sm leading-6 text-neutral-400">
         {repo.description ?? <span className="italic text-neutral-600">No description provided.</span>}
       </p>
 
@@ -100,7 +107,10 @@ export default function RepoCard({ repo, bookmarked }: Props) {
           )}
         </div>
 
-        <ArrowRightIcon className="h-4 w-4 shrink-0 text-neutral-600 transition group-hover:translate-x-0.5 group-hover:text-cyan-400" />
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-xs font-medium text-neutral-500 transition-colors group-hover:bg-cyan-500/10 group-hover:text-cyan-300">
+          View
+          <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+        </span>
       </div>
     </Link>
   );

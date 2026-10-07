@@ -16,6 +16,22 @@ describe('GET /api/repositories', () => {
         expect(res.body.data.length).toBeLessThanOrEqual(2);
     });
 
+    it('defaults to a limit of 12', async () => {
+        const res = await request(app).get('/api/repositories');
+        expect(res.status).toBe(200);
+        expect(res.body.limit).toBe(12);
+        expect(res.body.data.length).toBeLessThanOrEqual(12);
+    });
+
+    it('filters by difficulty level before pagination', async () => {
+        const res = await request(app).get('/api/repositories?difficulty=Beginner&limit=12');
+        expect(res.status).toBe(200);
+        expect(res.body.data.length).toBeLessThanOrEqual(12);
+        for (const repo of res.body.data) {
+            expect(repo.difficulty_level).toBe('Beginner');
+        }
+    });
+
 
     it('each returned repository has the expected fields', async () => {
         const res = await request(app).get('/api/repositories?limit=1');

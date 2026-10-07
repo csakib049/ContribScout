@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Repository } from "../types";
 import { useAuth } from "../context/AuthContext";
 import RepoCard from "../components/RepoCard";
+import PageContainer from "../components/PageContainer";
 import { fetchRepositories, fetchBookmarks, searchRepositories } from '../services/api';
 import { AlertIcon, ChevronLeftIcon, ChevronRightIcon, InboxIcon, SearchIcon, SpinnerIcon, XIcon } from "../components/icons";
 
@@ -55,7 +56,7 @@ export default function ExplorePage() {
 
   useEffect(() => {
     setLoading(true);
-    fetchRepositories(page)
+    fetchRepositories(page, filter)
       .then((res) => {
         setRepos(res.data);
         setHasMore(res.data.length === res.limit); // full page = probably more
@@ -63,7 +64,7 @@ export default function ExplorePage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [page, reloadKey]);
+  }, [page, filter, reloadKey]);
 
   useEffect(() => {
     if (!user) {
@@ -76,11 +77,21 @@ export default function ExplorePage() {
   }, [user]);
 
   const baseList = searchResults ?? repos;
-  const filtered = filter === 'All' ? baseList : baseList.filter((r) => r.difficulty_level === filter);
+  const filtered =
+    searchResults && filter !== 'All'
+      ? searchResults.filter((r) => r.difficulty_level === filter)
+      : baseList;
 
   function clearFilters() {
     setFilter('All');
     setSearchQuery('');
+    setPage(1);
+  }
+
+  function selectFilter(level: string) {
+    if (level === filter) return;
+    setFilter(level);
+    setPage(1);
   }
 
   function handleRetry() {
@@ -90,9 +101,9 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <PageContainer className="pt-6 pb-12 sm:pt-8">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
           Explore Repositories
         </h1>
         <p className="mt-2 text-sm text-neutral-400 sm:text-base">
@@ -141,7 +152,7 @@ export default function ExplorePage() {
                 <button
                   key={level}
                   type="button"
-                  onClick={() => setFilter(level)}
+                  onClick={() => selectFilter(level)}
                   aria-pressed={active}
                   className={`flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors sm:flex-none ${
                     active
@@ -196,7 +207,7 @@ export default function ExplorePage() {
         ) : loading ? (
           <div>
             <span className="sr-only" role="status">Loading repositories...</span>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+            <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden="true">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
@@ -241,7 +252,7 @@ export default function ExplorePage() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((repo) => (
               <RepoCard key={repo.id} repo={repo} bookmarked={bookmarkedIds.has(repo.id)} />
             ))}
@@ -278,6 +289,6 @@ export default function ExplorePage() {
           </button>
         </nav>
       )}
-    </div>
+    </PageContainer>
   );
 }
