@@ -24,6 +24,7 @@ export interface Issue {
     comments: number;
     difficulty_score: number;
     difficulty_level: string;
+    updated_at?: string;
 }
 
 

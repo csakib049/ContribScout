@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+@theme {
+  --color-canvas: #0a0a0a;
+  --color-surface: #171717;
+  --color-elevated: #1d1d1d;
+  --color-line: #262626;
+  --color-line-strong: #404040;
+  --color-primary: #fafafa;
+  --color-secondary: #d4d4d4;
+  --color-muted: #a3a3a3;
+  --color-accent: #06b6d4;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+}
+
 html {
   color-scheme: dark;
 }
@@ -52,6 +67,30 @@ body {
   100% {
     transform: translateX(100%);
   }
+}
+
+.tree-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+  overscroll-behavior: contain;
+}
+
+.tree-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tree-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tree-scroll::-webkit-scrollbar-thumb {
+  background-color: #2e2e2e;
+  border-radius: 9999px;
+}
+
+.tree-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-line-strong);
 }
 
 @media (prefers-reduced-motion: reduce) {

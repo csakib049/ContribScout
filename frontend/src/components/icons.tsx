@@ -130,6 +130,137 @@ export function SpinnerIcon({ className = 'h-4 w-4 animate-spin' }: IconProps) {
   );
 }
 
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="m6 9 6 6 6-6" />
+    </Svg>
+  );
+}
+
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </Svg>
+  );
+}
+
+export function FolderIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M4 20a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2z" />
+    </Svg>
+  );
+}
+
+export function FolderOpenIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M4 20a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V10" />
+      <path d="M2.5 11.5h18.2a1.2 1.2 0 0 1 1.17 1.48l-1.4 5.6A2 2 0 0 1 18.52 20H4a2 2 0 0 1-2-2z" />
+    </Svg>
+  );
+}
+
+export function FileIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z" />
+      <path d="M14 2.5v5h5" />
+    </Svg>
+  );
+}
+
+export function FileTextIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z" />
+      <path d="M14 2.5v5h5" />
+      <path d="M9 13h6" />
+      <path d="M9 17h6" />
+    </Svg>
+  );
+}
+
+export function FileCodeIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z" />
+      <path d="M14 2.5v5h5" />
+      <path d="m10 13-2 2 2 2" />
+      <path d="m14 13 2 2-2 2" />
+    </Svg>
+  );
+}
+
+export function FileImageIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z" />
+      <path d="M14 2.5v5h5" />
+      <circle cx="9.5" cy="13" r="1" />
+      <path d="m5 20 4.5-4.5 3 3L15 16l4 4" />
+    </Svg>
+  );
+}
+
+export function FileCogIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z" />
+      <path d="M14 2.5v5h5" />
+      <circle cx="12" cy="15" r="2" />
+      <path d="M12 11.5v1M12 17.5v1M8.5 15h1M14.5 15h1" />
+    </Svg>
+  );
+}
+
+export function MessageIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" />
+    </Svg>
+  );
+}
+
+export function ClockIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Svg>
+  );
+}
+
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M3 5h18l-7 8v5l-4 2v-7z" />
+    </Svg>
+  );
+}
+
+export function ExpandIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="m8 9 4-4 4 4" />
+      <path d="m16 15-4 4-4-4" />
+    </Svg>
+  );
+}
+
+export function CollapseIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="m8 14 4 4 4-4" />
+      <path d="m16 10-4-4-4 4" />
+    </Svg>
+  );
+}
+
 export function GitHubIcon({ className }: IconProps) {
   return (
     <svg
