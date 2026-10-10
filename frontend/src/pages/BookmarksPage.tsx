@@ -4,6 +4,7 @@ import { fetchBookmarks } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BookmarkButton from '../components/BookmarkButton';
 import PageContainer from '../components/PageContainer';
+import LemniscateLoader from '../components/LemniscateLoader';
 import type { Repository } from '../types';
 
 export default function BookmarksPage() {
@@ -18,9 +19,25 @@ export default function BookmarksPage() {
             .finally(() => setLoading(false));
     }, [user]);
 
-    if (authLoading) return <div className="p-8 text-center">Loading...</div>;
+    if (authLoading) {
+        return (
+            <PageContainer className="pt-6 pb-12 sm:pt-8">
+                <div className="flex min-h-[60vh] items-center justify-center">
+                    <LemniscateLoader label="Loading..." />
+                </div>
+            </PageContainer>
+        );
+    }
     if (!user) return <div className="p-8 text-center text-neutral-400">Sign in to see your bookmarks.</div>;
-    if (loading) return <div className="p-8 text-center">Loading bookmarks...</div>;
+    if (loading) {
+        return (
+            <PageContainer className="pt-6 pb-12 sm:pt-8">
+                <div className="flex min-h-[60vh] items-center justify-center">
+                    <LemniscateLoader label="Loading bookmarks..." />
+                </div>
+            </PageContainer>
+        );
+    }
 
     return (
         <PageContainer className="pt-6 pb-12 sm:pt-8">

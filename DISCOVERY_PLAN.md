@@ -1,6 +1,8 @@
 # ContribScout — Automatic Repository Discovery (Planning)
 
-> This is a planning document, not code yet. It explains how we will later make ContribScout find new GitHub repositories on its own, instead of only using a fixed `TRACKED_REPOS` list. Build this **after** the current project is stable — one piece at a time, not all at once.
+> **Status:** most of this is now implemented in `backend/src/jobs/discover.ts` + `backend/src/services/discovery.ts`, run manually with `npm run discover` (candidate search, quality checks, `is_active` deactivation review — all as described below). What is still open is scheduling discovery to run automatically on a timer, as §5 proposes.
+
+> **Original framing:** this was a planning document, not code yet. It explains how ContribScout finds new GitHub repositories on its own, instead of only using a fixed `TRACKED_REPOS` list. It was meant to be built **after** the main project was stable — which has now happened.
 
 ---
 

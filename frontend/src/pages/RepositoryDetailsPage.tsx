@@ -7,6 +7,7 @@ import RepoHeader from "../components/RepoHeader";
 import IssueCard from "../components/IssueCard";
 import FileTree from "../components/FileTree";
 import { AlertIcon, InboxIcon, SearchIcon, XIcon } from "../components/icons";
+import LemniscateLoader from "../components/LemniscateLoader";
 
 type MobileTab = 'issues' | 'files';
 
@@ -84,7 +85,15 @@ function RepoDetails({ repoId, onRetry }: { repoId: string; onRetry: () => void 
     );
   }, [issues, issueQuery]);
 
-  if (loading) return <RepoDetailsSkeleton />;
+  if (loading) {
+    return (
+      <PageContainer className="pt-6 pb-12 sm:pt-8">
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <LemniscateLoader label="Loading repository..." />
+        </div>
+      </PageContainer>
+    );
+  }
 
   if (error || !repo) {
     return (
@@ -105,7 +114,7 @@ function RepoDetails({ repoId, onRetry }: { repoId: string; onRetry: () => void 
             >
               Retry
             </button>
-            <Link to="/" className="text-sm text-accent transition-colors hover:text-cyan-300">
+            <Link to="/explore" className="text-sm text-accent transition-colors hover:text-cyan-300">
               Back to Explore
             </Link>
           </div>
@@ -255,35 +264,5 @@ function InlineError({ message, onRetry }: { message: string; onRetry: () => voi
         Retry
       </button>
     </div>
-  );
-}
-
-function RepoDetailsSkeleton() {
-  return (
-    <PageContainer className="pt-6 pb-12 sm:pt-8">
-      <span className="sr-only" role="status">
-        Loading repository...
-      </span>
-      <div aria-hidden="true">
-        <div className="rounded-2xl border border-line bg-surface p-6">
-          <div className="skeleton h-3 w-40 rounded" />
-          <div className="skeleton mt-4 h-7 w-72 max-w-full rounded" />
-          <div className="skeleton mt-3 h-4 w-full max-w-xl rounded" />
-          <div className="mt-4 flex flex-wrap gap-2">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="skeleton h-7 w-20 rounded-full" />
-            ))}
-          </div>
-        </div>
-        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
-          <div className="space-y-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="skeleton h-24 rounded-xl" />
-            ))}
-          </div>
-          <div className="skeleton hidden h-96 rounded-2xl lg:block" />
-        </div>
-      </div>
-    </PageContainer>
   );
 }

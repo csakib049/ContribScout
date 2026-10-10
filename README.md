@@ -2,7 +2,7 @@
 
 ## What is this project
 
-ContribScout helps developers find open-source GitHub projects and issues that match their skill level. You can browse a list of repositories, see how hard they are (Beginner, Intermediate, or Advanced), open a repository to see its files, issues, and pull requests, and click through to the real GitHub page. If you sign in with GitHub, you can also save repositories as bookmarks to look at later.
+ContribScout helps developers find open-source GitHub projects and issues that match their skill level. You can browse a list of repositories, search and filter them, see how hard they are (Beginner, Intermediate, or Advanced), open a repository to see its files and open issues, and click through to the real GitHub page. If you sign in with GitHub, you can also save repositories as bookmarks to look at later.
 
 ## What it's built with
 
@@ -14,13 +14,15 @@ ContribScout helps developers find open-source GitHub projects and issues that m
 ## Main features
 
 - Browse a list of open-source repositories
+- Search repositories by name, owner, or description
 - Filter repositories by difficulty level
-- Open a repository to see its files, open issues, and pull requests
+- Open a repository to see its file tree and open issues, and filter those issues by title or label
 - Click through to the real repository or issue on GitHub
 - Sign in with your GitHub account
 - Save repositories as bookmarks and view them later
-- Data updates automatically in the background, so it stays fresh
-- Automatically discovers new repositories from GitHub based on quality checks (open issues, beginner-friendly labels, activity)
+- A landing page that introduces the project and what it does
+- A background sync job keeps repository and issue data fresh
+- Discovers new repositories from GitHub based on quality checks (open issues, beginner-friendly labels, activity) via `npm run discover`
 
 ## How to run it on your own computer
 
@@ -69,6 +71,11 @@ Start the backend:
 npm run dev
 ```
 
+To keep the data updating on a timer in the background, run the scheduler in its own terminal (optional):
+```
+npm run scheduler
+```
+
 **3. Set up the frontend**
 
 Open a new terminal window:
@@ -95,7 +102,7 @@ Go to `http://localhost:5173` in your browser.
 
 A few choices were made on purpose, to keep the project simple, free to run, and working well:
 
-- **The website never asks GitHub for data live, while a user is browsing.** Instead, a background job fetches repository and issue data every few hours and saves it in the database. The website only reads from its own database. This keeps the site fast and avoids running into GitHub's request limits.
+- **The website almost never asks GitHub for data live, while a user is browsing.** Instead, a background job fetches repository and issue data every few hours and saves it in the database. The one exception is the file tree: opening a repository details page fetches that repository's file list straight from GitHub's API so it is always current. Everything else is served from the project's own database, which keeps the site fast and avoids running into GitHub's request limits.
 
 - **Login does not need a database session.** When you sign in, the backend gives your browser a signed token (kept in a cookie) instead of saving a session on the server. This keeps things simple and means the backend doesn't need extra memory or a session store to know who's logged in.
 

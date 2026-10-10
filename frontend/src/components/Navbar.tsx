@@ -21,7 +21,7 @@ export default function Navbar() {
         <header className="sticky top-0 z-40 border-b border-neutral-800/70 bg-neutral-950/80 backdrop-blur-md">
             <PageContainer>
                 <nav aria-label="Main" className="flex h-14 items-center gap-1">
-                    <Link to="/" className="mr-2 flex items-center gap-2.5 sm:mr-4">
+                    <Link to="/explore" className="mr-2 flex items-center gap-2.5 sm:mr-4">
                         <LogoMark className="h-8 w-8 shrink-0" />
                         <span className="text-[15px] font-semibold leading-none tracking-tight text-white">
                             Contrib<span className="text-cyan-400">Scout</span>
@@ -29,7 +29,7 @@ export default function Navbar() {
                     </Link>
 
                     <div className="hidden items-center gap-1 sm:flex">
-                        <NavLink to="/" end className={({ isActive }) => navLinkClass(isActive)}>
+                        <NavLink to="/explore" end className={({ isActive }) => navLinkClass(isActive)}>
                             Explore
                         </NavLink>
                         {user && (

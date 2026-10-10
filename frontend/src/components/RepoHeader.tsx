@@ -23,7 +23,7 @@ export default function RepoHeader({ repo }: Props) {
 
       <div className="relative">
         <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-xs text-muted">
-          <Link to="/" className="rounded transition-colors hover:text-secondary">
+          <Link to="/explore" className="rounded transition-colors hover:text-secondary">
             Explore
           </Link>
           <span aria-hidden="true" className="text-line-strong">

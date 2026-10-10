@@ -6,6 +6,18 @@
 
 ---
 
+## Implementation status (as of now)
+
+Parts of this plan are already built, so a few sections below read as *future* work even though the app does them today. The mismatches:
+
+- **Auth, bookmarks, and search are done.** §5 lists authentication and bookmarks as "explicitly cut from MVP" and §13 puts them in "Phase 2+", but GitHub OAuth login (`/auth/*`), the bookmarks API (`/api/bookmarks`), and repository search (`/api/repositories/search`, using Postgres `tsvector` full-text over name, description, and language) are implemented — along with `users` and `bookmarks` tables, which §10 said to hold off on.
+- **The repo details page shows files + open issues, not pull requests.** §8 and the §13 MVP API list include pull requests (`/api/repositories/:id/pulls`), but that endpoint and any PR UI were never built.
+- **The frontend has more pages.** §12 lists only Explore and RepositoryDetails; the app also has a Landing page (`/`), My Bookmarks (`/bookmarks`), and the shared components under `components/`.
+- **Difficulty rules were tuned.** §7's starting numbers differ from `services/difficulty.ts` (e.g. age thresholds, extra signals for breaking/major, question/discussion and no-label issues, and separate repo-vs-issue thresholds). The plan said "tune these numbers once you see real data" — that happened.
+- **Discovery is code, but not yet automatic.** §6 and the DISCOVERY_PLAN described discovery as a future plan, but `jobs/discover.ts` + `services/discovery.ts` now implement it (run with `npm run discover`). It is not scheduled to run on its own yet.
+
+---
+
 ## What changed from the original plan and why
 
 | Area | Original plan | Problem | Revised approach |
