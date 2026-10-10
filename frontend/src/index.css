@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -13,6 +14,8 @@
   --color-success: #34d399;
   --color-warning: #fbbf24;
   --color-danger: #f87171;
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
@@ -48,8 +51,7 @@ body {
   );
   background-repeat: no-repeat;
   color: var(--color-neutral-100);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
