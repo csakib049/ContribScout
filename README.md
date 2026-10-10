@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="frontend/public/contribscout-logo-mark.png" alt="ContribScout" width="140" height="140" />
+</p>
+
 # ContribScout
 
 ## What is this project
