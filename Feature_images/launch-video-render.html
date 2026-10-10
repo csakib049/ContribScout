@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ContribScout — Product Launch Video</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #05070a; color: #f7fafc; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+  main { width: min(100%, 1320px); margin: 0 auto; padding: 28px 24px; }
+  h1 { font-size: 20px; margin: 0 0 14px; }
+  p { color: #a8b2c0; font-size: 14px; margin: 0 0 18px; }
+  canvas { display: block; width: 100%; height: auto; border: 1px solid #252b35; border-radius: 12px; background: #05070a; }
+  button { margin: 14px 8px 0 0; padding: 11px 18px; color: #fff; background: linear-gradient(100deg,#06b6d4,#2563eb); border: 0; border-radius: 8px; font: 600 14px inherit; cursor: pointer; }
+  button:disabled { opacity: .55; cursor: wait; }
+  .hint { margin-top: 14px; font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>ContribScout — Product Launch</h1>
+  <p>Preview the 16:9 launch film with its generated voiceover.</p>
+  <canvas id="film" width="1920" height="1080" aria-label="ContribScout product launch video preview"></canvas>
+  <button id="play">Play preview</button>
+  <p class="hint">Uses the supplied launch screenshots and a short terminal-style discovery animation inspired by the supplied HTML reference.</p>
+</main>
+<audio id="narration" preload="auto" src="launch-voiceover.mp3"></audio>
+<script>
+const canvas = document.querySelector('#film');
+const ctx = canvas.getContext('2d');
+const audio = document.querySelector('#narration');
+const playButton = document.querySelector('#play');
+const shots = {};
+for (const [key, src] of Object.entries({ hero: '1.png', features: '2.png', how: '3.png', explore: '6.png', issues: '7.png', tree: 'filetree.png', bookmarks: 'bookmarks.png', mark: 'launch-brand-mark.png' })) {
+  const img = new Image(); img.src = src; shots[key] = img;
+}
+const cues = [
+  { kicker:'THE PROBLEM', title:'Where do I fit?', body:'Open source is full of opportunity. Finding a first issue that feels right can be the hard part.', image:null },
+  { kicker:'MEET CONTRIBSCOUT', title:'Find projects you can actually contribute to.', body:'A clearer path from browsing repositories to choosing your next contribution.', image:'hero' },
+  { kicker:'FIND YOUR FIT', title:'Search. Filter. Choose your level.', body:'Browse a star-ranked catalog, search across repository details, and filter by difficulty.', image:'explore' },
+  { kicker:'DIFFICULTY AT A GLANCE', title:'Know where to start.', body:'Beginner, Intermediate, and Advanced estimates use repository and issue signals to help you decide.', image:'issues' },
+  { kicker:'LOOK BEFORE YOU LEAP', title:'Explore the work before you jump in.', body:'Read synced open issues, filter by title or label, and inspect a live repository file tree.', image:'tree' },
+  { kicker:'MAKE IT YOURS', title:'Save the projects worth coming back to.', body:'Sign in with GitHub, bookmark promising repositories, and find them in My Bookmarks.', image:'bookmarks' },
+  { kicker:'LESS SEARCHING. MORE BUILDING.', title:'Your next contribution starts here.', body:'ContribScout — discover, choose, and contribute. Start exploring today.', image:'features' },
+];
+const weights = cues.map(c => (c.title + ' ' + c.body).split(/\s+/).length + 7);
+const totalWeight = weights.reduce((a,b)=>a+b,0);
+let startedAt=0, raf=0, playing=false, recorder=null, chunks=[];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function roundRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r); if(fill){ctx.fillStyle=fill;ctx.fill();} if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
+function fitImage(img,x,y,w,h){ if(!img.complete||!img.naturalWidth)return; ctx.save();ctx.beginPath();ctx.roundRect(x,y,w,h,14);ctx.clip();ctx.fillStyle='#090b0e';ctx.fillRect(x,y,w,h);if(img.naturalWidth/img.naturalHeight>w/h){const scale=Math.min(w/img.naturalWidth,h/img.naturalHeight);const dw=img.naturalWidth*scale,dh=img.naturalHeight*scale;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);}else{const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight);const sw=w/scale,sh=h/scale,sx=(img.naturalWidth-sw)/2,sy=(img.naturalHeight-sh)/2;ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);}ctx.restore(); }
+function wrap(text,x,y,maxWidth,lineHeight,font,color){ctx.font=font;ctx.fillStyle=color;const words=text.split(/\s+/);let line='', yy=y;for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,yy);line=word;yy+=lineHeight;}else line=test;}if(line)ctx.fillText(line,x,yy);return yy;}
+function frame(t){
+  const W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H);ctx.fillStyle='#05070a';ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W*.52,H*.05,0,W*.52,H*.05,850);glow.addColorStop(0,'rgba(20,135,170,.16)');glow.addColorStop(1,'rgba(5,7,10,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(111,153,174,.075)';ctx.lineWidth=1;for(let x=0;x<W;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  const total=audio.duration||52; const progress=clamp(t/total,0,1);let target=0,cumulative=0;for(let i=0;i<weights.length;i++){if(progress>=cumulative/totalWeight)target=i;cumulative+=weights[i];}
+  let cut=0;for(let i=0;i<target;i++)cut+=weights[i];const local=clamp((progress*totalWeight-cut)/weights[target],0,1);const fade=Math.min(1,local*5,(1-local)*5);
+  ctx.globalAlpha=.35+.65*fade;
+  const cue=cues[target];
+  ctx.fillStyle='#11151b';ctx.fillRect(0,0,W,74);ctx.fillStyle='#202731';ctx.fillRect(0,73,W,1);
+  if(shots.mark.complete&&shots.mark.naturalWidth)ctx.drawImage(shots.mark,33,18,38,38);
+  ctx.font='600 21px "Segoe UI",Arial';ctx.fillStyle='#f5f7fa';ctx.fillText('Contrib',82,44);ctx.fillStyle='#22d3ee';ctx.fillText('Scout',157,44);
+  ctx.font='500 14px "Segoe UI",Arial';ctx.fillStyle='#8793a3';ctx.fillText('OPEN-SOURCE CONTRIBUTION DISCOVERY',W-420,42);
+  const hasImage=Boolean(cue.image);const leftX=112,leftW=hasImage?690:1150;
+  ctx.globalAlpha=fade;ctx.font='700 17px Consolas,monospace';ctx.fillStyle='#22d3ee';ctx.fillText(cue.kicker, leftX,310);
+  let titleY=wrap(cue.title,leftX,390,leftW,78,'700 60px "Segoe UI",Arial','#f8fafc');
+  wrap(cue.body,leftX,titleY+62,leftW-25,42,'400 27px "Segoe UI",Arial','#aeb9c7');
+  if(target===0){
+    roundRect(leftX,titleY+164,565,130,12,'#0e1116','#27303b');ctx.font='500 20px Consolas,monospace';ctx.fillStyle='#8995a3';ctx.fillText('$ search open-source issues',leftX+24,titleY+207);ctx.fillStyle='#fda4af';ctx.fillText('> Too many projects. Where to begin?',leftX+24,titleY+250);ctx.fillStyle='#22d3ee';ctx.fillRect(leftX+24,titleY+271,10,2);
+  }
+  if(target===1){ctx.font='600 17px "Segoe UI",Arial';roundRect(leftX,titleY+172,295,54,10,'rgba(8,15,22,.9)','#27303b');ctx.fillStyle='#dbeafe';ctx.fillText('DISCOVER  →  CONTRIBUTE',leftX+20,titleY+207);}
+  if(hasImage){
+    const x=900,y=190,w=900,h=690;
+    ctx.save();ctx.shadowColor='rgba(0,0,0,.65)';ctx.shadowBlur=40;roundRect(x,y,w,h,18,'#0e1116','#29313b');ctx.restore();
+    roundRect(x,y,w,48,18,'#151a20','#29313b');ctx.fillStyle='#fa6b70';ctx.beginPath();ctx.arc(x+24,y+24,6,0,7);ctx.fill();ctx.fillStyle='#f9c451';ctx.beginPath();ctx.arc(x+45,y+24,6,0,7);ctx.fill();ctx.fillStyle='#3cd297';ctx.beginPath();ctx.arc(x+66,y+24,6,0,7);ctx.fill();
+    fitImage(shots[cue.image],x+12,y+58,w-24,h-70);
+  }
+  ctx.globalAlpha=1;
+  ctx.fillStyle='rgba(255,255,255,.10)';ctx.fillRect(0,H-5,W,5);ctx.fillStyle='#22d3ee';ctx.fillRect(0,H-5,W*progress,5);
+  ctx.font='500 15px "Segoe UI",Arial';ctx.fillStyle='#657181';ctx.fillText(String(target+1).padStart(2,'0')+' / '+String(cues.length).padStart(2,'0'),W-100,H-32);
+}
+function tick(){if(!playing)return;const t=audio.currentTime;frame(t);if(!audio.ended){raf=requestAnimationFrame(tick);}else{playing=false;frame(audio.duration);playButton.disabled=false;}}
+async function start(){if(playing)return;await audio.play();playing=true;playButton.disabled=true;startedAt=audio.currentTime;raf=requestAnimationFrame(tick);}
+playButton.addEventListener('click',()=>{audio.currentTime=0;start().catch(console.error)});
+audio.addEventListener('loadedmetadata',()=>frame(0));
+Promise.all(Object.values(shots).map(img=>img.decode().catch(()=>{}))).then(()=>frame(0));
+window.renderLaunchFrame = frame;
+window.shots = shots;
+window.getLaunchSceneSchedule = () => {
+  let elapsed=0;
+  const centers=weights.map(weight=>{const center=audio.duration*(elapsed+weight/2)/totalWeight;elapsed+=weight;return center;});
+  return { duration:audio.duration, weights, totalWeight, centers };
+};
+</script>
+</body>
+</html>

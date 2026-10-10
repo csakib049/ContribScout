@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ContribScout — Launch Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --canvas: #050506;
+    --surface: #0e0f12;
+    --surface-2: #14161b;
+    --line: #23262d;
+    --line-strong: #33373f;
+    --text: #fafafa;
+    --muted: #8b8f98;
+    --dim: #5b5f68;
+    --cyan: #22d3ee;
+    --blue: #2563eb;
+    --green: #34d399;
+    --font: "Quicksand", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--canvas);
+    color: var(--text);
+    font-family: var(--font);
+    overflow: hidden;
+  }
+
+  #stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  /* ---- ambient background ---- */
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60rem 32rem at 50% -8rem, rgba(34, 211, 238, 0.10), transparent 70%),
+      radial-gradient(48rem 30rem at 85% 120%, rgba(37, 99, 235, 0.10), transparent 70%);
+    pointer-events: none;
+  }
+  .grid {
+    position: absolute;
+    inset: -2px;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 78%);
+    pointer-events: none;
+  }
+
+  /* ---- scenes ---- */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: clamp(1.5rem, 4vw, 4rem);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: scale(0.985);
+  }
+  .scene.active { opacity: 1; visibility: visible; transform: scale(1); }
+
+  /* ---- terminal ---- */
+  .terminal-wrap { width: min(1040px, 92vw); }
+  .terminal {
+    width: 100%;
+    background: linear-gradient(180deg, var(--surface), #0b0c0f);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    overflow: hidden;
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .dots { display: flex; gap: 0.45rem; }
+  .dots i { width: 12px; height: 12px; border-radius: 999px; display: block; }
+  .dots i:nth-child(1) { background: #ff5f57; }
+  .dots i:nth-child(2) { background: #febc2e; }
+  .dots i:nth-child(3) { background: #28c840; }
+  .term-title {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .term-hud {
+    margin-left: auto;
+    display: flex;
+    gap: 1.1rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--dim);
+  }
+  .term-hud b { color: var(--cyan); font-weight: 700; }
+  .term-body {
+    font-family: var(--mono);
+    font-size: clamp(0.72rem, 1.05vw, 0.95rem);
+    line-height: 1.55;
+    padding: 1rem 1.15rem 1.3rem;
+    height: min(58vh, 520px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .ln { white-space: pre; }
+  .ln.sync { color: var(--muted); }
+  .ln.sync .repo { color: #c9cdd4; }
+  .ln.done { color: var(--green); padding-left: 1.3ch; }
+  .ln.done .n { color: #6ee7b7; font-weight: 700; }
+  .ln.boot { color: var(--dim); }
+  .cursor {
+    display: inline-block;
+    width: 0.62ch;
+    height: 1.05em;
+    background: var(--cyan);
+    vertical-align: -0.15em;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+  /* ---- bignum / complete ---- */
+  .statboard { text-align: center; }
+  .statboard .kicker {
+    font-family: var(--mono);
+    font-size: clamp(0.8rem, 1.3vw, 1rem);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--green);
+    opacity: 0;
+    animation: rise 0.7s ease forwards;
+  }
+  .stats {
+    display: flex;
+    gap: clamp(2rem, 7vw, 6rem);
+    justify-content: center;
+    margin-top: 1.6rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat .num {
+    font-size: clamp(2.6rem, 6.5vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #ffffff, #9fd9e8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .lbl {
+    margin-top: 0.5rem;
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---- reveal ---- */
+  .reveal { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .logo {
+    width: clamp(76px, 11vw, 132px);
+    height: clamp(76px, 11vw, 132px);
+    object-fit: contain;
+    filter: drop-shadow(0 18px 44px rgba(34, 211, 238, 0.35));
+  }
+  .wordmark {
+    margin-top: 1.4rem;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .wordmark .accent {
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .tagline {
+    margin-top: 1.15rem;
+    max-width: 34rem;
+    font-size: clamp(1rem, 2.1vw, 1.6rem);
+    font-weight: 500;
+    line-height: 1.35;
+    color: #d6d9de;
+  }
+  .tagline em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--cyan), #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ---- features ---- */
+  .feat-head {
+    font-family: var(--mono);
+    font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    width: min(880px, 92vw);
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.3rem;
+    background: linear-gradient(180deg, var(--surface), #0c0d10);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .card.show { opacity: 1; transform: none; }
+  .card .ic {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    color: var(--cyan);
+  }
+  .card .ic svg { width: 21px; height: 21px; }
+  .card h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+  .card p { font-size: 0.86rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.35; }
+
+  /* ---- outro ---- */
+  .outro { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .outro h2 {
+    font-size: clamp(2rem, 5.5vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    max-width: 22ch;
+  }
+  .outro p {
+    margin-top: 1.2rem;
+    font-size: clamp(1rem, 1.9vw, 1.35rem);
+    color: var(--muted);
+  }
+  .cta {
+    margin-top: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .cta .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cyan); }
+
+  /* ---- overlays / chrome ---- */
+  #progress {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    z-index: 50;
+  }
+  #progress > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    transition: width 0.25s linear;
+  }
+
+  #start {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(40rem 24rem at 50% 40%, rgba(34, 211, 238, 0.10), transparent 70%), var(--canvas);
+    cursor: pointer;
+    text-align: center;
+  }
+  #start .inner { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; }
+  #start .play {
+    width: 84px; height: 84px; border-radius: 999px;
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    background: rgba(34, 211, 238, 0.08);
+    display: grid; place-items: center;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  #start .play svg { width: 30px; height: 30px; color: var(--cyan); margin-left: 4px; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,211,238,0.25); } 50% { transform: scale(1.05); box-shadow: 0 0 0 18px rgba(34,211,238,0); } }
+  #start h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; }
+  #start p { color: var(--muted); font-size: 0.95rem; }
+  #start small { color: var(--dim); font-size: 0.78rem; font-family: var(--mono); letter-spacing: 0.08em; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .rise { opacity: 0; animation: rise 0.8s ease forwards; }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.25s; }
+  .d3 { animation-delay: 0.45s; }
+  .d4 { animation-delay: 0.65s; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg"></div>
+  <div class="grid"></div>
+
+  <!-- SCENE: terminal -->
+  <section class="scene" id="scene-term">
+    <div class="terminal-wrap">
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span class="term-title">contribscout — repository discovery &amp; sync</span>
+          <span class="term-hud">
+            <span>repos <b id="hud-repos">0</b>/<span id="hud-total">0</span></span>
+            <span>issues <b id="hud-issues">0</b></span>
+          </span>
+        </div>
+        <div class="term-body" id="term-body">
+          <div class="ln boot">$ npm run discover</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE: sync complete -->
+  <section class="scene" id="scene-done">
+    <div class="statboard">
+      <div class="kicker">Discovery complete</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="num" id="done-repos">0</div>
+          <div class="lbl">Repositories</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="done-issues">0</div>
+          <div class="lbl">Open issues indexed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE: reveal -->
+  <section class="scene" id="scene-reveal">
+    <div class="reveal">
+      <img class="logo rise d1" id="logo" src="frontend/public/contribscout-logo-mark.png" alt="ContribScout" width="132" height="132" />
+      <div class="wordmark rise d2">Contribution<span class="accent">Scout</span></div>
+      <div class="tagline rise d3">Find open-source projects you can <em>actually contribute to</em>.</div>
+    </div>
+  </section>
+
+  <!-- SCENE: features -->
+  <section class="scene" id="scene-features">
+    <div class="feat-head">What you get</div>
+    <div class="cards">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg></div>
+        <div><h3>Smart discovery</h3><p>New repos found and quality-checked automatically.</p></div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div><h3>Difficulty scoring</h3><p>Every repo and issue tagged Beginner to Advanced.</p></div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+        <div><h3>Full-text search</h3><p>Search millions of issues by name, language, or label.</p></div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></div>
+        <div><h3>Live file tree</h3><p>Inspect any repository's structure without leaving.</p></div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7Z"/><path d="M12 22V12M3 7l9 5 9-5"/></svg></div>
+        <div><h3>GitHub sign-in</h3><p>One-click OAuth, no passwords to remember.</p></div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v16l-7-4-7 4V4a1 1 0 0 1 1-1Z"/></svg></div>
+        <div><h3>Bookmarks</h3><p>Save the projects you want to come back to.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE: outro -->
+  <section class="scene" id="scene-outro">
+    <div class="outro">
+      <h2 class="rise d1">Your next open-source<br />contribution starts here.</h2>
+      <p class="rise d2">ContribScout — discover, filter, and contribute.</p>
+      <div class="cta rise d3"><span class="dot"></span> Start exploring</div>
+    </div>
+  </section>
+</div>
+
+<div id="progress"><i></i></div>
+
+<!-- start overlay -->
+<div id="start">
+  <div class="inner">
+    <div class="play">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <h1>ContribScout — Launch Sequence</h1>
+    <p>Click anywhere to play · record your screen in fullscreen (F11)</p>
+    <small>01:00 · 16:9 · press R to replay</small>
+  </div>
+</div>
+
+<script>
+/* ---------- data (from the real discovery-job logs) ---------- */
+const REPOS = [
+  ['Snailclimb/JavaGuide', 18], ['vercel/next.js', 114], ['nodejs/node', 168],
+  ['addyosmani/agent-skills', 58], ['louislam/uptime-kuma', 403], ['tt-a1i/archify', 121],
+  ['anuraghazra/github-readme-stats', 168], ['career-ops-hq/career-ops', 226], ['expressjs/express', 108],
+  ['chartjs/Chart.js', 399], ['webpack/webpack', 51], ['jquery/jquery', 73],
+  ['gatsbyjs/gatsby', 217], ['prettier/prettier', 350], ['bilawalsidhu/gods-eye-view', 83],
+  ['iamkun/dayjs', 248], ['usebruno/bruno', 258], ['serverless/serverless', 397],
+  ['microsoft/monaco-editor', 424], ['Leaflet/Leaflet', 317], ['meteor/meteor', 168],
+  ['parcel-bundler/parcel', 348], ['yangshun/front-end-interview-handbook', 11], ['freeCodeCamp/freeCodeCamp', 103],
+  ['openclaw/openclaw', 250], ['microsoft/vscode', 333], ['firecrawl/firecrawl', 86],
+  ['langgenius/dify', 152], ['excalidraw/excalidraw', 146], ['immich-app/immich', 297],
+  ['supabase/supabase', 69], ['google-gemini/gemini-cli', 298], ['nexu-io/open-design', 197],
+  ['ant-design/ant-design', 359], ['puppeteer/puppeteer', 244], ['Stirling-Tools/Stirling-PDF', 347],
+  ['OpenCut-app/OpenCut', 276], ['storybookjs/storybook', 199], ['OpenHands/OpenHands', 204],
+  ['stablyai/orca', 208], ['ChatGPTNextWeb/NextChat', 380], ['Egonex-AI/Understand-Anything', 117],
+  ['hoppscotch/hoppscotch', 273], ['grafana/grafana', 165], ['Eugeny/tabby', 406],
+  ['diegosouzapw/OmniRoute', 135], ['ruvnet/ruflo', 289], ['toeverything/AFFiNE', 411],
+  ['cline/cline', 239], ['code-yeongyu/oh-my-openagent', 284], ['EbookFoundation/free-programming-books', 40],
+  ['donnemartin/system-design-primer', 210], ['practical-tutorials/project-based-learning', 153],
+  ['TheAlgorithms/Python', 2], ['yt-dlp/yt-dlp', 318], ['microsoft/markitdown', 138],
+  ['Significant-Gravitas/AutoGPT', 182], ['open-webui/open-webui', 212]
+];
+
+/* ---------- small helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const fmt = (n) => n.toLocaleString("en-US");
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const TOTAL_ISSUES = REPOS.reduce((a, [, n]) => a + n, 0);
+
+/* ---------- scene control ---------- */
+let running = false;
+function show(id) {
+  document.querySelectorAll(".scene.active").forEach((s) => s.classList.remove("active"));
+  const el = $(id);
+  el.classList.add("active");
+}
+
+/* ---------- progress bar ---------- */
+function setProgress(p) { $("progress").firstElementChild.style.width = `${Math.min(100, p * 100)}%`; }
+
+/* ---------- terminal ---------- */
+const termBody = $("term-body");
+function pushLine(html, cls) {
+  const div = document.createElement("div");
+  div.className = "ln " + cls;
+  div.innerHTML = html;
+  termBody.appendChild(div);
+  while (termBody.children.length > 26) termBody.removeChild(termBody.firstChild);
+  termBody.scrollTop = termBody.scrollHeight;
+}
+
+/* ---------- count up ---------- */
+async function countUp(el, to, ms) {
+  if (reduce) { el.textContent = fmt(to); return; }
+  const steps = 42;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(Math.round(to * eased));
+    await sleep(ms / steps);
+  }
+  el.textContent = fmt(to);
+}
+
+/* ---------- logo fallback ---------- */
+$("logo").addEventListener("error", function () {
+  const div = document.createElement("div");
+  div.className = "logo rise d1";
+  div.style.borderRadius = "999px";
+  div.style.background = "linear-gradient(135deg,#22d3ee,#2563eb)";
+  this.replaceWith(div);
+});
+
+/* ---------- the timeline ---------- */
+async function play() {
+  if (running) return;
+  running = true;
+
+  /* reset */
+  termBody.innerHTML = '<div class="ln boot">$ npm run discover</div>';
+  $("hud-repos").textContent = "0";
+  $("hud-total").textContent = REPOS.length;
+  $("hud-issues").textContent = "0";
+  $("done-repos").textContent = "0";
+  $("done-issues").textContent = "0";
+  document.querySelectorAll(".card").forEach((c) => c.classList.remove("show"));
+  document.querySelectorAll(".rise").forEach((c) => { c.style.animation = "none"; void c.offsetWidth; c.style.animation = ""; });
+  setProgress(0);
+
+  /* 1) terminal */
+  show("scene-term");
+  pushLine("Starting repository discovery…", "boot");
+  await sleep(700);
+  pushLine("Searching candidates across languages: js, ts, python, go, java…", "boot");
+  await sleep(900);
+
+  let issues = 0;
+  for (let i = 0; i < REPOS.length; i++) {
+    const [name, n] = REPOS[i];
+    pushLine(`Syncing <span class="repo">${name}</span>.....`, "sync");
+    await sleep(reduce ? 10 : 210);
+    pushLine(`<span class="n">${n}</span> issues synced.`, "done");
+    issues += n;
+    $("hud-repos").textContent = i + 1;
+    $("hud-issues").textContent = fmt(issues);
+    setProgress(0.06 + 0.62 * ((i + 1) / REPOS.length));
+    await sleep(reduce ? 10 : 230);
+  }
+
+  pushLine("Reconciling difficulty scores…", "boot");
+  await sleep(600);
+  pushLine("Deactivating stale repositories… none.", "boot");
+  await sleep(500);
+  pushLine("Discovery complete.", "done");
+  await sleep(1000);
+
+  /* 2) sync complete */
+  show("scene-done");
+  setProgress(0.72);
+  await sleep(250);
+  await Promise.all([
+    countUp($("done-repos"), REPOS.length, 1300),
+    countUp($("done-issues"), TOTAL_ISSUES, 1500)
+  ]);
+  await sleep(2200);
+
+  /* 3) reveal */
+  show("scene-reveal");
+  setProgress(0.82);
+  await sleep(4200);
+
+  /* 4) features */
+  show("scene-features");
+  setProgress(0.9);
+  const cards = document.querySelectorAll("#scene-features .card");
+  await sleep(500);
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].classList.add("show");
+    await sleep(reduce ? 10 : 480);
+  }
+  await sleep(2600);
+
+  /* 5) outro */
+  show("scene-outro");
+  setProgress(1);
+  document.querySelectorAll("#scene-outro .rise").forEach((c) => { c.style.animation = "none"; void c.offsetWidth; c.style.animation = ""; });
+
+  running = false;
+}
+
+/* ---------- start / replay ---------- */
+$("start").addEventListener("click", () => {
+  $("start").classList.add("hidden");
+  play();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "r" || e.key === "R") {
+    if (!running) { $("start").classList.add("hidden"); play(); }
+  }
+});
+</script>
+</body>
+</html>

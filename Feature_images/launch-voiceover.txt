@@ -1,0 +1,7 @@
+Open source has incredible projects, but finding the right first issue can feel overwhelming. Too many repos. Too little direction.
+
+Meet ContribScout: a clearer path to your next contribution. Browse popular projects, search by name or language, and filter by difficulty. Beginner, Intermediate, or Advanced estimates help you choose, with signals from labels, comments, age, and project size.
+
+Found a project? Explore current files and open issues, then filter issues by title or label. Sign in with GitHub, bookmark promising repos, and return whenever you're ready.
+
+Behind the scenes, scheduled syncs and quality-checked discovery keep the catalog fresh. Spend less time searching. Start contributing with ContribScout.
