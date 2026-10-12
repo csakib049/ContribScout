@@ -335,6 +335,8 @@
   .d4 { animation-delay: 0.65s; }
 
   .hidden { display: none !important; }
+  #start.hidden { display: none !important; }
+  #progress { display: none; }
 </style>
 </head>
 <body>
@@ -594,19 +596,36 @@ async function play() {
   document.querySelectorAll("#scene-outro .rise").forEach((c) => { c.style.animation = "none"; void c.offsetWidth; c.style.animation = ""; });
 
   running = false;
+
+  /* auto-restart after a brief pause */
+  if (!reduce) {
+    setTimeout(() => {
+      $("start").classList.add("hidden");
+      play();
+    }, 2200);
+  }
 }
 
 /* ---------- start / replay ---------- */
-$("start").addEventListener("click", () => {
   $("start").classList.add("hidden");
   play();
-});
+  $("start").addEventListener("click", () => {
+    $("start").classList.add("hidden");
+    play();
+  });
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "r" || e.key === "R") {
-    if (!running) { $("start").classList.add("hidden"); play(); }
-  }
-});
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "r" || e.key === "R") {
+      if (!running) { $("start").classList.add("hidden"); play(); }
+    }
+  });
+
+  /* ---------- auto-replay on loop ---------- */
+  document.addEventListener("animationend", () => {
+    if (running) return;
+    $("start").classList.add("hidden");
+    play();
+  });
 </script>
 </body>
 </html>

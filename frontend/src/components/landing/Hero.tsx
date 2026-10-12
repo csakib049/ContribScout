@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import BrowserFrame from './BrowserFrame';
 import CursorGrid from './CursorGrid';
 import GradientText from './GradientText';
 import { GitHubIcon } from './BrandIcons';
 import { primaryButton, secondaryButton } from './styles';
 import { hero, SIGN_IN_URL } from './content';
-import repoDetailsShot from '../../assets/landing/repo-details.png';
 
 export default function Hero() {
   const { user, loading } = useAuth();
@@ -91,15 +89,19 @@ export default function Hero() {
             )}
           </div>
 
-          <div className="lg:pl-4">
-            <BrowserFrame
-              src={repoDetailsShot}
-              alt="The ContribScout repository details page, showing a project's description along with its open issues and file tree."
-              width={1714}
-              height={910}
-              loading="eager"
-              priority
-            />
+          <div className="min-w-0">
+            <div
+              className="relative w-full overflow-hidden rounded-2xl border border-line bg-black shadow-2xl shadow-black/40"
+              style={{ aspectRatio: '16 / 9' }}
+            >
+              <iframe
+                src="/contribscout-launch-video.html"
+                title="ContribScout product launch video"
+                className="absolute inset-0 block h-full w-full border-0"
+                allow="autoplay"
+                loading="eager"
+              />
+            </div>
           </div>
         </div>
       </div>

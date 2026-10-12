@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import LandingHeader from '../components/landing/LandingHeader';
 import Hero from '../components/landing/Hero';
 import Features from '../components/landing/Features';
+import DiscoverySection from '../components/landing/DiscoverySection';
 import HowItWorks from '../components/landing/HowItWorks';
 import ProductPreview from '../components/landing/ProductPreview';
 import AuthorSection from '../components/landing/AuthorSection';
@@ -47,6 +48,7 @@ export default function LandingPage() {
       <main>
         <Hero />
         <Features />
+        <DiscoverySection videoSrc="/launch-video.html" videoAlt="ContribScout automatic repository discovery" />
         <HowItWorks />
         <ProductPreview />
         <AuthorSection />
