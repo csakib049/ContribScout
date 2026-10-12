@@ -8,6 +8,8 @@
 
 ContribScout helps developers find open-source GitHub projects and issues that match their skill level. You can browse a list of repositories, search and filter them, see how hard they are (Beginner, Intermediate, or Advanced), open a repository to see its files and open issues, and click through to the real GitHub page. If you sign in with GitHub, you can also save repositories as bookmarks to look at later.
 
+**Live site:** [contribscout-frontend.onrender.com](https://contribscout-frontend.onrender.com)
+
 ## What it's built with
 
 - **Frontend:** React, TypeScript, Tailwind CSS
