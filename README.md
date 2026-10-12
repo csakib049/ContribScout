@@ -10,6 +10,12 @@ ContribScout helps developers find open-source GitHub projects and issues that m
 
 **Live site:** [contribscout-frontend.onrender.com](https://contribscout-frontend.onrender.com)
 
+## Product demo
+
+<p align="center">
+  <img src="Feature_images/contribscout-launch.gif" alt="ContribScout product launch animation showing repository discovery, difficulty filters, issue and file exploration, and bookmarks" width="800" />
+</p>
+
 ## What it's built with
 
 - **Frontend:** React, TypeScript, Tailwind CSS
