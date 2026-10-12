@@ -37,14 +37,7 @@ export default function DiscoverySection({ videoSrc, videoAlt }: Props) {
                 title={videoAlt}
                 className="block w-full"
                 style={{ aspectRatio: '16 / 9', minHeight: '640px' }}
-                allow="autoplay; loop; muted"
-                allowAccelerometer="false"
-                allowAutoplay="true"
-                allowCamera="false"
-                allowEncryptedMedia="false"
-                allowGeolocation="false"
-                allowMicrophone="false"
-                allowPicture-in-picture="false"
+                allow="autoplay"
               />
             </div>
           </div>
