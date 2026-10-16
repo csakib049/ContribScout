@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchBookmarks } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BookmarkButton from '../components/BookmarkButton';
+import UserAvatar from '../components/UserAvatar';
 import PageContainer from '../components/PageContainer';
 import LemniscateLoader from '../components/LemniscateLoader';
 import type { Repository } from '../types';
@@ -46,9 +47,12 @@ export default function BookmarksPage() {
             <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {repos.map((repo) => (
                     <Link key={repo.id} to={`/repo/${repo.id}`} className="border border-neutral-800 bg-neutral-900 rounded-lg p-4 hover:bg-neutral-800 hover:border-neutral-700 hover:shadow-lg transition block">
-                        <div className="flex justify-between items-start gap-3">
-                            <h2 className="min-w-0 break-words font-semibold">{repo.owner}/{repo.name}</h2>
-                            <BookmarkButton repositoryId={repo.id} initiallyBookmarked={true} />
+                        <div className="flex items-start gap-3">
+                            <UserAvatar username={repo.owner} size="medium" shape="tile" />
+                            <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
+                                <h2 className="min-w-0 break-words font-semibold">{repo.owner}/{repo.name}</h2>
+                                <BookmarkButton repositoryId={repo.id} initiallyBookmarked={true} />
+                            </div>
                         </div>
                         <p className="text-sm text-neutral-400 mt-1 line-clamp-2">{repo.description}</p>
                         {!repo.is_active && (

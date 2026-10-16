@@ -4,6 +4,7 @@ import { ExternalLinkIcon, ForkIcon, StarIcon } from './icons';
 import { compactNumber, fullNumber } from '../utils/format';
 import { toEmoji } from '../utils/emoji';
 import { difficultyDots, languageColor } from '../utils/presentation';
+import UserAvatar from './UserAvatar';
 
 interface Props {
   repo: Repository;
@@ -37,18 +38,21 @@ export default function RepoHeader({ repo }: Props) {
         </nav>
 
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-[26px] font-semibold leading-tight tracking-tight sm:text-[30px]">
-              <span className="font-normal text-muted">{repo.owner}/</span>
-              <span className="text-primary">{repo.name}</span>
-            </h1>
-            {description ? (
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary [overflow-wrap:anywhere]">
-                {description}
-              </p>
-            ) : (
-              <p className="mt-2 text-sm italic text-muted">No description provided.</p>
-            )}
+          <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+            <UserAvatar username={repo.owner} size="large" shape="tile" />
+            <div className="min-w-0">
+              <h1 className="break-words text-[26px] font-semibold leading-tight tracking-tight sm:text-[30px]">
+                <span className="font-normal text-muted">{repo.owner}/</span>
+                <span className="text-primary">{repo.name}</span>
+              </h1>
+              {description ? (
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary [overflow-wrap:anywhere]">
+                  {description}
+                </p>
+              ) : (
+                <p className="mt-2 text-sm italic text-muted">No description provided.</p>
+              )}
+            </div>
           </div>
 
           <a

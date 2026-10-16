@@ -2,13 +2,21 @@ import { useState } from 'react';
 
 interface Props {
   username: string;
+  size?: 'small' | 'medium' | 'large';
+  shape?: 'circle' | 'tile';
   className?: string;
 }
 
-export default function UserAvatar({ username, className = '' }: Props) {
+export default function UserAvatar({ username, size = 'small', shape = 'circle', className = '' }: Props) {
   const [failed, setFailed] = useState(false);
 
-  const base = `grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full ring-1 ring-white/10 ${className}`;
+  const dimensions = {
+    small: 'h-7 w-7',
+    medium: 'h-10 w-10',
+    large: 'h-12 w-12 sm:h-14 sm:w-14',
+  }[size];
+  const rounding = shape === 'tile' ? 'rounded-xl' : 'rounded-full';
+  const base = `grid ${dimensions} shrink-0 place-items-center overflow-hidden ${rounding} ring-1 ring-white/10 ${className}`;
 
   if (failed || !username) {
     return (

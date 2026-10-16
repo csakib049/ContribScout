@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { Repository } from '../types';
 import BookmarkButton from './BookmarkButton';
+import UserAvatar from './UserAvatar';
 import { ArrowRightIcon, ForkIcon, StarIcon } from './icons';
 import { difficultyDots, difficultyStyles, languageColor as getLanguageColor } from '../utils/presentation';
 
@@ -23,17 +24,20 @@ export default function RepoCard({ repo, bookmarked }: Props) {
         aria-hidden="true"
       />
 
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="min-h-11 min-w-0 break-words text-[15px] font-semibold leading-snug tracking-tight text-white">
-          <span className="font-normal text-neutral-400 transition-colors group-hover:text-neutral-300">
-            {repo.owner}/
-          </span>
-          {repo.name}
-        </h2>
-
-        <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex items-start gap-3">
+        <UserAvatar username={repo.owner} size="medium" shape="tile" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h2 className="min-h-11 min-w-0 break-words text-[15px] font-semibold leading-snug tracking-tight text-white">
+              <span className="font-normal text-neutral-400 transition-colors group-hover:text-neutral-300">
+                {repo.owner}/
+              </span>
+              {repo.name}
+            </h2>
+            <BookmarkButton repositoryId={repo.id} initiallyBookmarked={bookmarked} />
+          </div>
           <span
-            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+            className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
               difficultyStyles[level] ?? 'border-neutral-700 bg-neutral-800 text-neutral-300'
             }`}
           >
@@ -43,7 +47,6 @@ export default function RepoCard({ repo, bookmarked }: Props) {
             />
             {level}
           </span>
-          <BookmarkButton repositoryId={repo.id} initiallyBookmarked={bookmarked} />
         </div>
       </div>
 
